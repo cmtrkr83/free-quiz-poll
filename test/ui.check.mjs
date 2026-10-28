@@ -74,10 +74,11 @@ const base = `http://127.0.0.1:${address.port}`;
 
 let browser;
 try {
-  const token = await registerAccount(base, `uiadmin${Date.now().toString(36)}`);
+  const username = process.env.UI_USERNAME || `uiadmin${Date.now().toString(36)}`;
+  const token = await registerAccount(base, username);
   const created = await createEvent(base, token, '8-A Fen Bilimleri Tekrar');
-  const created2 = await createEvent(base, token, 'Editör Testi');
-  await createEvent(base, token, 'Üçüncü Etkinlik');
+  const created2 = await createEvent(base, token, 'Tarih Dersi Hızlı Yoklama');
+  await createEvent(base, token, 'Veli Toplantısı Anketi');
 
   browser = await puppeteer.launch({
     executablePath: EDGE,
