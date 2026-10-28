@@ -17,6 +17,7 @@
   <img src="https://img.shields.io/badge/Node.js-%E2%89%A520.19-3c873a?style=flat-square&logo=node.js&logoColor=white" alt="Node.js 20.19+" />
   <img src="https://img.shields.io/badge/Docker-ready-2496ed?style=flat-square&logo=docker&logoColor=white" alt="Docker ready" />
   <img src="https://img.shields.io/badge/self--hosted-100%25-7c5cff?style=flat-square" alt="Self-hosted" />
+  <img src="https://img.shields.io/badge/license-MIT-0ea371?style=flat-square" alt="MIT license" />
   <img src="https://img.shields.io/badge/tracking-none-0ea371?style=flat-square" alt="No tracking" />
 </p>
 
@@ -324,6 +325,11 @@ Host requests are authenticated with the session cookie. Legacy clients may send
 - Comfortable with hundreds of concurrent participants; very large events have not been stress-tested.
 - Participant names are self-declared. Share links only with people you trust.
 - No camera or microphone access; HTTPS is still recommended for public deployments.
+
+## License
+
+MIT © 2026 Cem Türker — see [LICENSE](LICENSE). You may use, modify and redistribute the app,
+including commercially, as long as the copyright notice is kept.
 
 ## Support
 

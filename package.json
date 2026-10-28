@@ -4,6 +4,22 @@
   "private": true,
   "type": "module",
   "description": "Self-hosted, Wooclap-style live quiz, poll and word cloud app. Participants answer at their own pace from any phone.",
+  "license": "MIT",
+  "keywords": [
+    "quiz",
+    "poll",
+    "live-quiz",
+    "audience-response",
+    "wooclap-alternative",
+    "kahoot-alternative",
+    "self-hosted",
+    "real-time",
+    "socket.io",
+    "express",
+    "word-cloud",
+    "classroom",
+    "education"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cmtrkr83/free-quiz-poll.git"

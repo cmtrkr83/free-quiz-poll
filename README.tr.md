@@ -382,3 +382,9 @@ canli-oturum/
 | `DELETE` | `/api/events/:code` | Etkinliği sil (host) |
 
 Yönetici istekleri oturum çereziyle doğrulanır. Eski istemciler için anahtar `?key=` sorgu parametresi veya `x-host-key` başlığıyla da gönderilebilir; panel bağlantıları `?k=` ile açıldığında anahtar başlıkta taşınır.
+
+## Lisans
+
+MIT © 2026 Cem Türker — ayrıntılar için [LICENSE](LICENSE). Telif bildirimi korunduğu sürece
+uygulamayı ticari kullanım dahil özgürce kullanabilir, değiştirebilir ve dağıtabilirsin.
+
