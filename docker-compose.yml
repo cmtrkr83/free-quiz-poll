@@ -1,0 +1,29 @@
+services:
+  app:
+    build: .
+    image: canli-oturum:latest
+    container_name: canli-oturum
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      PORT: 3000
+      HOST: 0.0.0.0
+      DATA_DIR: /data
+      PUBLIC_URL: ${PUBLIC_URL:-}
+      ADMIN_KEY: ${ADMIN_KEY:-}
+      EVENT_TTL_DAYS: ${EVENT_TTL_DAYS:-14}
+      MAX_EVENTS: ${MAX_EVENTS:-500}
+      TRUST_PROXY: ${TRUST_PROXY:-1}
+    volumes:
+      - canli-data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/healthz"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+
+volumes:
+  canli-data:
+    name: canli-oturum-data

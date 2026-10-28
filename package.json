@@ -1,0 +1,29 @@
+{
+  "name": "free-quiz-poll",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Self-hosted, Wooclap-style live quiz, poll and word cloud app. Participants answer at their own pace from any phone.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cmtrkr83/free-quiz-poll.git"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js",
+    "dev": "node --env-file-if-exists=.env --watch server.js",
+    "test": "node test/smoke.test.js",
+    "test:ui": "node test/ui.check.mjs"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "qrcode": "^1.5.4",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^23.11.1",
+    "socket.io-client": "^4.8.1"
+  }
+}

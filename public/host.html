@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#070a14" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="robots" content="noindex" />
+    <title>Canlı Oturum — Yönetici</title>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <script src="/js/theme.js?v=__ASSET_VERSION__"></script>
+    <link rel="stylesheet" href="/css/style.css?v=__ASSET_VERSION__" />
+  </head>
+  <body class="host-body">
+    <div id="root">
+      <div class="empty" style="padding-top: 20vh">
+        <div class="spinner" aria-hidden="true"></div>
+        <p style="margin-top: 12px">Yükleniyor…</p>
+      </div>
+    </div>
+
+    <div class="modal" id="modal" hidden></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/host.js?v=__ASSET_VERSION__"></script>
+  </body>
+</html>
