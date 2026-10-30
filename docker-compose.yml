@@ -5,12 +5,12 @@ services:
     container_name: canli-oturum
     restart: unless-stopped
     ports:
-      - "${PORT:-3131}:3000"
+      - "3131:3131"
     environment:
-      PORT: 3000
+      PORT: 3131
       HOST: 0.0.0.0
       DATA_DIR: /data
-      PUBLIC_URL: ${PUBLIC_URL:-}
+      PUBLIC_URL: https://poll41.share.zrok.io
       ADMIN_KEY: ${ADMIN_KEY:-}
       EVENT_TTL_DAYS: ${EVENT_TTL_DAYS:-14}
       MAX_EVENTS: ${MAX_EVENTS:-500}
@@ -18,7 +18,7 @@ services:
     volumes:
       - canli-data:/data
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/healthz"]
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3131/healthz"]
       interval: 30s
       timeout: 5s
       start_period: 10s
