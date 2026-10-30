@@ -159,11 +159,16 @@ Copy-Item .env.example .env
 docker compose up -d --build
 ```
 
-- Panel: <http://localhost:3000/host>
+- Panel: <http://localhost:3131/host>
+- Katılımcılar: <http://localhost:3131>
 - Durum: `docker compose ps`, günlükler: `docker compose logs -f app`
 - Durdurma: `docker compose down` (veri silinmez)
 - Güncelleme: `docker compose up -d --build`
 - Veri: `canli-oturum-data` adlı Docker volume'ünde, konteyner içinde `/data/db.json`
+
+Compose varsayılan olarak dışarıya `3131` portunu açar. Portainer'da `PORT=3131`
+değişkenini tanımlayarak da aynı portu açıkça belirtebilirsin. Konteyner içindeki
+uygulama portu `3000` olarak kalır.
 
 Docker Desktop'ın oturum açıldığında başlaması ve bilgisayarın uyumaması gerekir. Konteyner `restart: unless-stopped` ile yeniden başlatılır.
 
@@ -387,4 +392,3 @@ Yönetici istekleri oturum çereziyle doğrulanır. Eski istemciler için anahta
 
 MIT © 2026 Cem Türker — ayrıntılar için [LICENSE](LICENSE). Telif bildirimi korunduğu sürece
 uygulamayı ticari kullanım dahil özgürce kullanabilir, değiştirebilir ve dağıtabilirsin.
-
