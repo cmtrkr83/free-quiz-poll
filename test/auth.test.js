@@ -1,7 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import { createServer } from '../server.js';
 import { createCaptchaStore, CAPTCHA_BG } from '../src/captcha.js';
-import { parseCaptchaSvg } from './helpers.js';
+import { parseCaptchaSvg, tmpDir } from './helpers.js';
 
 test('captcha üretir: id, kod ve hayalet karakterler', () => {
   const store = createCaptchaStore();
@@ -47,4 +49,25 @@ test('store cap ve alfabe temizliği', () => {
   const shown = [...svg.matchAll(/<text[^>]*>([^<]*)<\/text>/g)].map((m) => m[1]).join('');
   assert.ok(!/[01OI]/.test(shown));
   assert.ok(shown.length >= 7); // 5 gerçek + 2 hayalet
+});
+
+test('captcha endpoint: svg döner ve rate limit uygular', async (t) => {
+  const dataDir = tmpDir();
+  const server = createServer({ dataDir, adminKey: '' });
+  const addr = await server.start(0, '127.0.0.1');
+  const base = `http://127.0.0.1:${addr.port}`;
+  t.after(async () => {
+    await server.close();
+    fs.rmSync(dataDir, { recursive: true, force: true });
+  });
+
+  const res = await fetch(`${base}/api/auth/captcha`);
+  assert.equal(res.status, 200);
+  assert.match(res.headers.get('content-type'), /image\/svg\+xml/);
+  assert.equal(res.headers.get('cache-control'), 'no-store');
+  assert.equal(parseCaptchaSvg(await res.text()).code.length, 5);
+
+  let last;
+  for (let i = 0; i < 31; i += 1) last = await fetch(`${base}/api/auth/captcha`);
+  assert.equal(last.status, 429);
 });

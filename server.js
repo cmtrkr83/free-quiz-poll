@@ -9,6 +9,7 @@ import { Store } from './src/store.js';
 import * as M from './src/model.js';
 import { demoQuestions } from './src/demo.js';
 import { cleanText, safeEqual, normalizeCode, randomCode, createLimiter, newId, randomToken } from './src/util.js';
+import { createCaptchaStore } from './src/captcha.js';
 import {
   SESSION_COOKIE,
   SESSION_TTL_MS,
@@ -49,6 +50,8 @@ export function createServer(options = {}) {
   const joinLimiter = createLimiter({ windowMs: 60 * 1000, max: 300 });
   const loginLimiter = createLimiter({ windowMs: 15 * 60 * 1000, max: 20 });
   const registerLimiter = createLimiter({ windowMs: 60 * 60 * 1000, max: 5 });
+  const captchaStore = createCaptchaStore();
+  const captchaLimiter = createLimiter({ windowMs: 60 * 1000, max: 30 });
 
   // Eski kayıtlara yeni alanları ekle.
   for (const ev of store.all()) {
@@ -347,6 +350,17 @@ export function createServer(options = {}) {
       registerKeyRequired: !!ADMIN_KEY,
       users: store.userCount(),
     });
+  });
+
+  app.get('/api/auth/captcha', (req, res) => {
+    const ip = req.ip || 'unknown';
+    if (!captchaLimiter(ip)) {
+      return res.status(429).json({ error: 'Çok fazla istek. Lütfen biraz bekleyin.' });
+    }
+    const { svg } = captchaStore.create();
+    res.set('Content-Type', 'image/svg+xml; charset=utf-8');
+    res.set('Cache-Control', 'no-store');
+    res.send(svg);
   });
 
   app.get('/api/auth/me', (req, res) => {
