@@ -459,6 +459,10 @@ export function createServer(options = {}) {
       if (!loginLimiter(ip)) {
         return res.status(429).json({ error: 'Çok fazla giriş denemesi. Lütfen biraz bekleyin.' });
       }
+      const captchaOk = captchaStore.verify(req.body?.captchaId, req.body?.captchaCode);
+      if (!captchaOk) {
+        return res.status(400).json({ error: 'CAPTCHA doğrulaması başarısız. Görseli yenileyip tekrar deneyin.' });
+      }
       const username = normalizeUsername(req.body?.username);
       const password = typeof req.body?.password === 'string' ? req.body.password : '';
       const user = username ? store.findUserByName(username) : null;

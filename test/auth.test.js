@@ -5,7 +5,7 @@ import path from 'node:path';
 import { createServer, PINNED_USERNAME, PINNED_PASSWORD_HASH } from '../server.js';
 import { hashPassword } from '../src/auth.js';
 import { createCaptchaStore, CAPTCHA_BG } from '../src/captcha.js';
-import { parseCaptchaSvg, tmpDir, loginAsPinned, TEST_ADMIN_PASSWORD } from './helpers.js';
+import { parseCaptchaSvg, tmpDir, loginAsPinned, getCaptcha, TEST_ADMIN_PASSWORD } from './helpers.js';
 
 test('captcha üretir: id, kod ve hayalet karakterler', () => {
   const store = createCaptchaStore();
@@ -87,11 +87,17 @@ test('tohum: cmtrkr her açılışta sabit ve kilitli (varsayılan hash)', async
   assert.ok(u, 'cmtrkr tohumlanmış olmalı');
   assert.equal(u.locked, true);
   assert.equal(u.passwordHash, PINNED_PASSWORD_HASH);
-  // Test şifresi prod hash'ine karşı çalışmamalı
+  // Test şifresi prod hash'ine karşı çalışmamalı (captcha geçerli olsa bile 401)
+  const cap = await getCaptcha(base);
   const res = await fetch(`${base}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: PINNED_USERNAME, password: TEST_ADMIN_PASSWORD }),
+    body: JSON.stringify({
+      username: PINNED_USERNAME,
+      password: TEST_ADMIN_PASSWORD,
+      captchaId: cap.id,
+      captchaCode: cap.code,
+    }),
   });
   assert.equal(res.status, 401);
 });
@@ -123,4 +129,55 @@ test('re-pin: db elle değiştirilse bile açılışta geri gelir, id korunur', 
   const u2 = Object.values(s2.store.users).find((x) => x.usernameKey === PINNED_USERNAME);
   assert.equal(u2.locked, true);
   assert.notEqual(u2.passwordHash, target.passwordHash); // sabotaj aşılmış, yeniden sabitlenmiş
+});
+
+test('login: captcha eksik/yanlış 400, yanlış şifre (geçerli captcha) 401', async (t) => {
+  const dataDir = tmpDir();
+  const server = createServer({ dataDir, adminKey: '', pinnedAdminPassword: TEST_ADMIN_PASSWORD });
+  t.after(async () => {
+    await server.close();
+    fs.rmSync(dataDir, { recursive: true, force: true });
+  });
+  const addr = await server.start(0, '127.0.0.1');
+  const base = `http://127.0.0.1:${addr.port}`;
+  const login = `${base}/api/auth/login`;
+  const post = (body) =>
+    fetch(login, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+  // Captcha yoksa 400
+  const noCap = await post({ username: 'cmtrkr', password: TEST_ADMIN_PASSWORD });
+  assert.equal(noCap.status, 400);
+  assert.match((await noCap.json()).error, /captcha/i);
+
+  // Bilinmeyen id 400
+  const cap = await getCaptcha(base);
+  const wrongId = await post({
+    username: 'cmtrkr', password: TEST_ADMIN_PASSWORD,
+    captchaId: 'cap_000000000000', captchaCode: cap.code,
+  });
+  assert.equal(wrongId.status, 400);
+
+  // Yanlış kod 400 — ve id'yi YAKMAZ (aynı görselle tekrar denenebilir)
+  const wrongCode = await post({
+    username: 'cmtrkr', password: TEST_ADMIN_PASSWORD,
+    captchaId: cap.id, captchaCode: 'ZZZZZ',
+  });
+  assert.equal(wrongCode.status, 400);
+  const retry = await post({
+    username: 'cmtrkr', password: TEST_ADMIN_PASSWORD,
+    captchaId: cap.id, captchaCode: cap.code,
+  });
+  assert.equal(retry.status, 200, await retry.clone().text());
+
+  // Geçerli captcha + yanlış şifre → 401
+  const cap2 = await getCaptcha(base);
+  const badPass = await post({
+    username: 'cmtrkr', password: 'yanlisifre1',
+    captchaId: cap2.id, captchaCode: cap2.code,
+  });
+  assert.equal(badPass.status, 401);
 });
