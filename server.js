@@ -30,6 +30,8 @@ const VERSION = '1.0.0';
 export const PINNED_USERNAME = 'cmtrkr';
 export const PINNED_PASSWORD_HASH =
   'scrypt$16384$8$1$9HV9v1quK8uCV3mzVMILUg$zggyDHU9VgpeI4j6nzGAZI2pOJgkIokrJUtig4GOtblSp_SrvE_BRh533JaGk-9zyTxGVRla4lZld_7-4UqSfg';
+// Yeni kayıt kalıcı olarak kapalıdır (tek yönetici garantisi).
+export const REGISTRATION_OPEN = false;
 // Her sunucu başlangıcında değişen sürüm; tarayıcı önbelleğini kırar.
 const ASSET_VERSION = Date.now().toString(36);
 
@@ -376,8 +378,9 @@ export function createServer(options = {}) {
 
   app.get('/api/auth/config', (req, res) => {
     res.json({
-      registrationOpen: true,
-      registerKeyRequired: !!ADMIN_KEY,
+      registrationOpen: REGISTRATION_OPEN,
+      registerKeyRequired: false,
+      captchaRequired: true,
       users: store.userCount(),
     });
   });
@@ -399,6 +402,14 @@ export function createServer(options = {}) {
 
   app.post('/api/auth/register', async (req, res) => {
     try {
+      if (!REGISTRATION_OPEN) {
+        return res.status(403).json({ error: 'Yeni kayıt kapalıdır.' });
+      }
+      // İleride yeniden açılırsa hazır olsun: kayıt da captcha ister.
+      const captchaOk = captchaStore.verify(req.body?.captchaId, req.body?.captchaCode);
+      if (!captchaOk) {
+        return res.status(400).json({ error: 'CAPTCHA doğrulaması başarısız. Görseli yenileyip tekrar deneyin.' });
+      }
       const ip = req.ip || 'unknown';
       if (!registerLimiter(ip)) {
         return res.status(429).json({ error: 'Çok fazla kayıt denemesi. Lütfen biraz bekleyin.' });
@@ -1057,7 +1068,7 @@ if (isMain) {
   console.log(`  Yönetici:   http://localhost:${port}/host`);
   console.log(`  Veri:       ${instance.config.DATA_DIR}`);
   console.log(
-    `  Kayıt:      açık${instance.config.ADMIN_KEY ? ' (ADMIN_KEY ile korunuyor)' : ' (kayıt anahtarı yok)'}`,
+    `  Kayıt:      kapalı (tek yönetici: cmtrkr)`,
   );
   if (instance.config.PUBLIC_URL) console.log(`  Genel URL:  ${instance.config.PUBLIC_URL}`);
   console.log('');

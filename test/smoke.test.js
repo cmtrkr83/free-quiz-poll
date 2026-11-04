@@ -1,15 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import os from 'node:os';
-import path from 'node:path';
 import { io as ioClient } from 'socket.io-client';
 import { createServer } from '../server.js';
-import { sessionCookie } from './helpers.js';
-
-function tmpDir() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), 'canli-oturum-test-'));
-}
+import { TEST_ADMIN_PASSWORD, loginAsPinned, tmpDir } from './helpers.js';
 
 function once(socket, event) {
   return new Promise((resolve) => socket.once(event, resolve));
@@ -30,17 +24,6 @@ async function connect(url) {
   return socket;
 }
 
-async function makeAccount(base, { username = 'testadmin', password = 'parola1234', adminKey = '' } = {}) {
-  const response = await fetch(`${base}/api/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password, adminKey }),
-  });
-  assert.equal(response.status, 201, await response.clone().text());
-  const data = await response.json();
-  return { user: data.user, cookie: sessionCookie(response) };
-}
-
 function createEvent(base, cookie, body) {
   return fetch(`${base}/api/events`, {
     method: 'POST',
@@ -51,7 +34,7 @@ function createEvent(base, cookie, body) {
 
 test('uçtan uca canlı oturum akışı', async (t) => {
   const dataDir = tmpDir();
-  const server = createServer({ dataDir, adminKey: '', publicUrl: '' });
+  const server = createServer({ dataDir, adminKey: '', publicUrl: '', pinnedAdminPassword: TEST_ADMIN_PASSWORD });
   const address = await server.start(0, '127.0.0.1');
   const base = `http://127.0.0.1:${address.port}`;
 
@@ -67,7 +50,7 @@ test('uçtan uca canlı oturum akışı', async (t) => {
   assert.equal(health.ok, true);
 
   // 2. Etkinlik oluştur (örnek sorularla)
-  const account = await makeAccount(base);
+  const account = await loginAsPinned(base);
   const createRes = await createEvent(base, account.cookie, { title: 'Test Oturumu', template: 'demo' });
   assert.equal(createRes.status, 201);
   const created = await createRes.json();
@@ -280,16 +263,16 @@ test('uçtan uca canlı oturum akışı', async (t) => {
 
 test('veriler yeniden başlatmada korunur', async () => {
   const dataDir = tmpDir();
-  const first = createServer({ dataDir });
+  const first = createServer({ dataDir, pinnedAdminPassword: TEST_ADMIN_PASSWORD });
   const a = await first.start(0, '127.0.0.1');
   const baseA = `http://127.0.0.1:${a.port}`;
-  const account = await makeAccount(baseA);
+  const account = await loginAsPinned(baseA);
   const created = await (
     await createEvent(baseA, account.cookie, { title: 'Kalıcı Etkinlik', template: 'demo' })
   ).json();
   await first.close();
 
-  const second = createServer({ dataDir });
+  const second = createServer({ dataDir, pinnedAdminPassword: TEST_ADMIN_PASSWORD });
   const b = await second.start(0, '127.0.0.1');
   try {
     const meta = await (await fetch(`http://127.0.0.1:${b.port}/api/events/${created.code}`)).json();
@@ -303,7 +286,7 @@ test('veriler yeniden başlatmada korunur', async () => {
 
 test('yönetici anahtarı ve doğrulama', async (t) => {
   const dataDir = tmpDir();
-  const server = createServer({ dataDir, adminKey: 'gizli-anahtar' });
+  const server = createServer({ dataDir, adminKey: 'gizli-anahtar', pinnedAdminPassword: TEST_ADMIN_PASSWORD });
   const address = await server.start(0, '127.0.0.1');
   const base = `http://127.0.0.1:${address.port}`;
   t.after(async () => {
@@ -318,15 +301,16 @@ test('yönetici anahtarı ve doğrulama', async (t) => {
   });
   assert.equal(denied.status, 401);
 
-  // Kayıt anahtarı olmadan hesap açılamaz.
+  // Kayıt kalıcı kapalı: anahtar olsa da 403.
   const noKey = await fetch(`${base}/api/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: 'baskas', password: 'parola1234' }),
+    body: JSON.stringify({ username: 'baskas', password: TEST_ADMIN_PASSWORD }),
   });
-  assert.equal(noKey.status, 401);
+  assert.equal(noKey.status, 403);
+  assert.match((await noKey.json()).error, /kayıt kapalı/i);
 
-  const account = await makeAccount(base, { username: 'korunan', adminKey: 'gizli-anahtar' });
+  const account = await loginAsPinned(base);
   const allowed = await createEvent(base, account.cookie, { title: 'Korumalı', template: 'demo' });
   assert.equal(allowed.status, 201);
   const ev = await allowed.json();
@@ -364,7 +348,7 @@ test('yönetici anahtarı ve doğrulama', async (t) => {
 
 test('hesap, çoktan seçmeli oylama, cevap kapatma ve kod değiştirme', async (t) => {
   const dataDir = tmpDir();
-  const server = createServer({ dataDir });
+  const server = createServer({ dataDir, pinnedAdminPassword: TEST_ADMIN_PASSWORD });
   const address = await server.start(0, '127.0.0.1');
   const base = `http://127.0.0.1:${address.port}`;
   t.after(async () => {
@@ -372,7 +356,7 @@ test('hesap, çoktan seçmeli oylama, cevap kapatma ve kod değiştirme', async 
     fs.rmSync(dataDir, { recursive: true, force: true });
   });
 
-  const account = await makeAccount(base, { username: 'ogretmen', password: 'parola1234' });
+  const account = await loginAsPinned(base);
   const created = await (
     await createEvent(base, account.cookie, {
       title: 'Çoktan Seçmeli Test',
@@ -477,19 +461,11 @@ test('hesap, çoktan seçmeli oylama, cevap kapatma ve kod değiştirme', async 
   t.after(() => newHost.disconnect());
   const moved = await call(newHost, 'host:join', { code: 'YENI42', key: created.hostKey });
   assert.equal(moved.ok, true);
-
-  // Kullanıcı adı tekrar alınamaz.
-  const duplicate = await fetch(`${base}/api/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: 'ogretmen', password: 'parola1234' }),
-  });
-  assert.equal(duplicate.status, 409);
 });
 
 test('süreler katılımcıya özeldir ve süre dolunca sonuç açılır', async (t) => {
   const dataDir = tmpDir();
-  const server = createServer({ dataDir });
+  const server = createServer({ dataDir, pinnedAdminPassword: TEST_ADMIN_PASSWORD });
   const address = await server.start(0, '127.0.0.1');
   const base = `http://127.0.0.1:${address.port}`;
   t.after(async () => {
@@ -497,7 +473,7 @@ test('süreler katılımcıya özeldir ve süre dolunca sonuç açılır', async
     fs.rmSync(dataDir, { recursive: true, force: true });
   });
 
-  const account = await makeAccount(base, { username: 'zamanlayici' });
+  const account = await loginAsPinned(base);
   const created = await (
     await createEvent(base, account.cookie, {
       title: 'Süre Testi',

@@ -181,3 +181,28 @@ test('login: captcha eksik/yanlış 400, yanlış şifre (geçerli captcha) 401'
   });
   assert.equal(badPass.status, 401);
 });
+
+test('kayıt kalıcı kapalı', async (t) => {
+  const dataDir = tmpDir();
+  const server = createServer({ dataDir, adminKey: 'gizli-anahtar' });
+  t.after(async () => {
+    await server.close();
+    fs.rmSync(dataDir, { recursive: true, force: true });
+  });
+  const addr = await server.start(0, '127.0.0.1');
+  const base = `http://127.0.0.1:${addr.port}`;
+
+  const res = await fetch(`${base}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: 'yeni', password: TEST_ADMIN_PASSWORD }),
+  });
+  assert.equal(res.status, 403);
+  assert.match((await res.json()).error, /kayıt kapalı/i);
+
+  const cfg = await (await fetch(`${base}/api/auth/config`)).json();
+  assert.deepEqual(
+    { a: cfg.registrationOpen, b: cfg.registerKeyRequired, c: cfg.captchaRequired },
+    { a: false, b: false, c: true },
+  );
+});
