@@ -681,12 +681,14 @@
         });
         S.user = data.user || null;
         S.authMode = 'login';
+        S.captcha = null; // girişte captcha tüketildi; yenisi render'da çekilir
         toast(mode === 'register' ? 'Hesabın oluşturuldu.' : 'Giriş yapıldı.', 'good');
         await boot();
       } catch (error) {
         errEl.textContent = error.message || 'İşlem tamamlanamadı.';
-        if (error.status === 400 && mode === 'login') {
-          // Yanlış/eksik captcha: kullanıcı yeni görseli görsün.
+        if (mode === 'login' && (error.status === 400 || error.status === 401)) {
+          // Captcha ya yanlış (400) ya da doğru girilip tüketilmiş (401):
+          // kullanıcı her ikisinde de yeni görseli görsün.
           const input = document.getElementById('auth-captcha');
           if (input) input.value = '';
           await refreshCaptcha();
