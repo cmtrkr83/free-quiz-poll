@@ -65,9 +65,12 @@ export function usernameKey(username) {
 }
 
 export function validatePassword(password) {
-  if (typeof password !== 'string' || password.length < 8) {
-    return 'Şifre en az 8 karakter olmalı.';
+  if (typeof password !== 'string' || password.length === 0) {
+    return 'Şifre gerekli.';
   }
   if (password.length > 200) return 'Şifre çok uzun.';
+  if (!/^[\p{L}\p{N}]+$/u.test(password)) {
+    return 'Şifre yalnızca harf ve rakam içerebilir.';
+  }
   return null;
 }

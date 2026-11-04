@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createServer, PINNED_USERNAME, PINNED_PASSWORD_HASH } from '../server.js';
-import { hashPassword } from '../src/auth.js';
+import { hashPassword, validatePassword } from '../src/auth.js';
 import { createCaptchaStore, CAPTCHA_BG } from '../src/captcha.js';
 import { parseCaptchaSvg, tmpDir, loginAsPinned, getCaptcha, TEST_ADMIN_PASSWORD } from './helpers.js';
 
@@ -205,4 +205,12 @@ test('kayıt kalıcı kapalı', async (t) => {
     { a: cfg.registrationOpen, b: cfg.registerKeyRequired, c: cfg.captchaRequired },
     { a: false, b: false, c: true },
   );
+});
+
+test('şifre kuralı: yalnız harf ve rakam', () => {
+  assert.equal(validatePassword(TEST_ADMIN_PASSWORD), null);
+  assert.equal(validatePassword('Şifreabc123'), null); // Türkçe harfler serbest
+  assert.match(validatePassword('abc!123'), /yalnızca harf ve rakam/);
+  assert.match(validatePassword(''), /gerekli/);
+  assert.match(validatePassword('a'.repeat(201)), /uzun/);
 });
