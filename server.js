@@ -49,8 +49,7 @@ const SECURITY_HEADERS = {
  * id'ye dokunmadan şifre hash'ini yeniden yazar ve kilitler (re-pin).
  */
 async function ensurePinnedAdmin(store, passwordHash) {
-  const key = usernameKey(PINNED_USERNAME);
-  const existing = Object.values(store.users).find((u) => u.usernameKey === key);
+  const existing = store.findUserByName(PINNED_USERNAME);
   if (existing) {
     existing.passwordHash = passwordHash;
     existing.locked = true;
@@ -59,7 +58,7 @@ async function ensurePinnedAdmin(store, passwordHash) {
     store.putUser({
       id: newId('u'),
       username: PINNED_USERNAME,
-      usernameKey: key,
+      usernameKey: usernameKey(PINNED_USERNAME),
       passwordHash,
       createdAt: Date.now(),
       locked: true,
@@ -405,14 +404,14 @@ export function createServer(options = {}) {
       if (!REGISTRATION_OPEN) {
         return res.status(403).json({ error: 'Yeni kayıt kapalıdır.' });
       }
+      const ip = req.ip || 'unknown';
+      if (!registerLimiter(ip)) {
+        return res.status(429).json({ error: 'Çok fazla kayıt denemesi. Lütfen biraz bekleyin.' });
+      }
       // İleride yeniden açılırsa hazır olsun: kayıt da captcha ister.
       const captchaOk = captchaStore.verify(req.body?.captchaId, req.body?.captchaCode);
       if (!captchaOk) {
         return res.status(400).json({ error: 'CAPTCHA doğrulaması başarısız. Görseli yenileyip tekrar deneyin.' });
-      }
-      const ip = req.ip || 'unknown';
-      if (!registerLimiter(ip)) {
-        return res.status(429).json({ error: 'Çok fazla kayıt denemesi. Lütfen biraz bekleyin.' });
       }
       if (ADMIN_KEY) {
         const provided = String(req.body?.adminKey || req.headers['x-admin-key'] || '').trim();
