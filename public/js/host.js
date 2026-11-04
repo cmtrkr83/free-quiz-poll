@@ -33,6 +33,7 @@
     user: null,
     authConfig: null,
     authMode: 'login',
+    captcha: null,
     events: [],
   };
 
@@ -523,6 +524,25 @@
     }
   }
 
+  async function refreshCaptcha() {
+    try {
+      const response = await fetch('/api/auth/captcha', { cache: 'no-store' });
+      if (!response.ok) return;
+      const svg = await response.text();
+      const id = /<!--captcha-id:([A-Za-z0-9_-]+)-->/.exec(svg)?.[1];
+      if (!id) return;
+      S.captcha = { id, svg };
+      const img = document.getElementById('auth-captcha-img');
+      if (img) img.src = captchaDataUri(svg);
+    } catch {
+      /* görsel getirilemezse kullanıcı Yenile ile tekrar deneyebilir */
+    }
+  }
+
+  function captchaDataUri(svg) {
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+  }
+
   function renderAuth(message = '') {
     const mode = S.authMode === 'register' ? 'register' : 'login';
     const config = S.authConfig || {};
@@ -552,7 +572,13 @@
             <button type="button" class="btn btn-sm ${mode === 'register' ? 'btn-primary' : 'btn-ghost'}" data-auth-mode="register" role="tab" aria-selected="${mode === 'register'}">Kayıt ol</button>
           </div>
 
-          <form id="auth-form" class="stack" novalidate>
+          ${
+            mode === 'register' && config.registrationOpen === false
+              ? `<div class="center stack" style="align-items:center;gap:8px;text-align:center;padding:8px 0 4px">
+                  <p style="font-weight:700">Yeni kayıt kapalıdır</p>
+                  <p class="muted small">Bu sunucuda tek yönetici hesabı bulunur. Mevcut hesabınla giriş yapabilirsin.</p>
+                </div>`
+              : `<form id="auth-form" class="stack" novalidate>
             <div>
               <label class="label" for="auth-username">Kullanıcı adı</label>
               <input id="auth-username" class="input" name="username" maxlength="32" autocomplete="username"
@@ -560,9 +586,23 @@
             </div>
             <div>
               <label class="label" for="auth-password">Şifre</label>
-              <input id="auth-password" class="input" name="password" type="password" minlength="8"
-                autocomplete="${mode === 'register' ? 'new-password' : 'current-password'}" placeholder="En az 8 karakter" />
+              <input id="auth-password" class="input" name="password" type="password" maxlength="200"
+                autocomplete="${mode === 'register' ? 'new-password' : 'current-password'}" placeholder="Yalnızca harf ve rakam" />
             </div>
+            ${
+              mode === 'login'
+                ? `<div>
+              <label class="label" for="auth-captcha">Görseldeki kod</label>
+              <div style="display:flex;gap:8px;align-items:center">
+                <img id="auth-captcha-img" src="${S.captcha ? captchaDataUri(S.captcha.svg) : ''}" alt="Doğrulama görseli"
+                  style="height:50px;border-radius:8px;background:#f0f2f5;cursor:pointer" title="Yeni görsel için tıkla" />
+                <input id="auth-captcha" class="input" name="captcha" maxlength="5" autocomplete="off"
+                  placeholder="Görseldeki kodu yaz" style="flex:1" />
+              </div>
+              <p class="hint" style="margin-top:6px">Okumakta zorlanırsan görsele tıklayıp yenileyebilirsin.</p>
+            </div>`
+                : ''
+            }
             ${
               mode === 'register' && config.registerKeyRequired
                 ? `<div>
@@ -584,7 +624,8 @@
                 ? 'Kayıt anahtarını sunucuyu kuran kişiden alabilirsin.'
                 : 'İlk kayıt olan yönetici, hesap sistemi öncesinde oluşturulmuş etkinlikleri devralır.'
               : 'Katılımcılar hesap açmadan yalnızca etkinlik koduyla katılır.'
-          }</p>
+          }</p>`
+          }
         </div>
       </main>`;
 
@@ -597,18 +638,31 @@
 
     const form = document.getElementById('auth-form');
     const errEl = document.getElementById('auth-err');
+
+    if (mode === 'login' && form) {
+      // Her render'da yeni GET yok (rate limit 30/dk): varsa önbellekten geri koy.
+      if (S.captcha) {
+        document.getElementById('auth-captcha-img').src = captchaDataUri(S.captcha.svg);
+      } else {
+        refreshCaptcha();
+      }
+      document.getElementById('auth-captcha-img')?.addEventListener('click', () => refreshCaptcha());
+    }
+    if (!form) return;
+
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
       errEl.textContent = '';
       const username = document.getElementById('auth-username').value.trim();
       const password = document.getElementById('auth-password').value;
+      const captchaCode = document.getElementById('auth-captcha')?.value.trim() || '';
       const adminKey = document.getElementById('auth-admin-key')?.value.trim() || '';
       if (username.length < 3) {
         errEl.textContent = 'Kullanıcı adı en az 3 karakter olmalı.';
         return;
       }
-      if (password.length < 8) {
-        errEl.textContent = 'Şifre en az 8 karakter olmalı.';
+      if (!/^[\p{L}\p{N}]+$/u.test(password)) {
+        errEl.textContent = password ? 'Şifre yalnızca harf ve rakam içerebilir.' : 'Şifre gerekli.';
         return;
       }
 
@@ -616,9 +670,14 @@
       button.disabled = true;
       button.innerHTML = '<span class="spinner"></span> Lütfen bekle…';
       try {
+        const body = { username, password, adminKey };
+        if (mode === 'login') {
+          body.captchaId = S.captcha?.id;
+          body.captchaCode = captchaCode;
+        }
         const data = await api(`/api/auth/${mode}`, {
           method: 'POST',
-          body: JSON.stringify({ username, password, adminKey }),
+          body: JSON.stringify(body),
         });
         S.user = data.user || null;
         S.authMode = 'login';
@@ -626,6 +685,12 @@
         await boot();
       } catch (error) {
         errEl.textContent = error.message || 'İşlem tamamlanamadı.';
+        if (error.status === 400 && mode === 'login') {
+          // Yanlış/eksik captcha: kullanıcı yeni görseli görsün.
+          const input = document.getElementById('auth-captcha');
+          if (input) input.value = '';
+          await refreshCaptcha();
+        }
         button.disabled = false;
         button.textContent = mode === 'register' ? 'Hesap oluştur' : 'Giriş yap';
       }
