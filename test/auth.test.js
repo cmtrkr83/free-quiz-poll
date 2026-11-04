@@ -1,9 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { createServer } from '../server.js';
+import path from 'node:path';
+import { createServer, PINNED_USERNAME, PINNED_PASSWORD_HASH } from '../server.js';
+import { hashPassword } from '../src/auth.js';
 import { createCaptchaStore, CAPTCHA_BG } from '../src/captcha.js';
-import { parseCaptchaSvg, tmpDir } from './helpers.js';
+import { parseCaptchaSvg, tmpDir, loginAsPinned, TEST_ADMIN_PASSWORD } from './helpers.js';
 
 test('captcha üretir: id, kod ve hayalet karakterler', () => {
   const store = createCaptchaStore();
@@ -70,4 +72,55 @@ test('captcha endpoint: svg döner ve rate limit uygular', async (t) => {
   let last;
   for (let i = 0; i < 31; i += 1) last = await fetch(`${base}/api/auth/captcha`);
   assert.equal(last.status, 429);
+});
+
+test('tohum: cmtrkr her açılışta sabit ve kilitli (varsayılan hash)', async (t) => {
+  const dataDir = tmpDir();
+  const server = createServer({ dataDir, adminKey: '' });
+  t.after(async () => {
+    await server.close();
+    fs.rmSync(dataDir, { recursive: true, force: true });
+  });
+  const addr = await server.start(0, '127.0.0.1');
+  const base = `http://127.0.0.1:${addr.port}`;
+  const u = Object.values(server.store.users).find((x) => x.usernameKey === PINNED_USERNAME);
+  assert.ok(u, 'cmtrkr tohumlanmış olmalı');
+  assert.equal(u.locked, true);
+  assert.equal(u.passwordHash, PINNED_PASSWORD_HASH);
+  // Test şifresi prod hash'ine karşı çalışmamalı
+  const res = await fetch(`${base}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: PINNED_USERNAME, password: TEST_ADMIN_PASSWORD }),
+  });
+  assert.equal(res.status, 401);
+});
+
+test('re-pin: db elle değiştirilse bile açılışta geri gelir, id korunur', async (t) => {
+  const dataDir = tmpDir();
+  let s2 = null;
+  t.after(async () => {
+    if (s2) await s2.close();
+    fs.rmSync(dataDir, { recursive: true, force: true });
+  });
+  const s1 = createServer({ dataDir, adminKey: '', pinnedAdminPassword: TEST_ADMIN_PASSWORD });
+  const a1 = await s1.start(0, '127.0.0.1');
+  const base1 = `http://127.0.0.1:${a1.port}`;
+  const { user } = await loginAsPinned(base1);
+  await s1.close();
+
+  const dbPath = path.join(dataDir, 'db.json');
+  const db = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+  const target = Object.values(db.users).find((x) => x.usernameKey === PINNED_USERNAME);
+  target.passwordHash = await hashPassword('baskasifre9'); // elle sabotaj
+  fs.writeFileSync(dbPath, JSON.stringify(db));
+
+  s2 = createServer({ dataDir, adminKey: '', pinnedAdminPassword: TEST_ADMIN_PASSWORD });
+  const a2 = await s2.start(0, '127.0.0.1');
+  const base2 = `http://127.0.0.1:${a2.port}`;
+  const again = await loginAsPinned(base2);
+  assert.equal(again.user.id, user.id); // id değişmez → etkinlik sahipliği korunur
+  const u2 = Object.values(s2.store.users).find((x) => x.usernameKey === PINNED_USERNAME);
+  assert.equal(u2.locked, true);
+  assert.notEqual(u2.passwordHash, target.passwordHash); // sabotaj aşılmış, yeniden sabitlenmiş
 });

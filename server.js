@@ -24,6 +24,12 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const VERSION = '1.0.0';
+
+// Tek yetkili yönetici. Şifre düz metin olarak hiçbir yerde tutulmaz;
+// yalnızca önceden hesaplanmış scrypt hash'i sabittir. (bkz. tasarım dokümanı)
+export const PINNED_USERNAME = 'cmtrkr';
+export const PINNED_PASSWORD_HASH =
+  'scrypt$16384$8$1$9HV9v1quK8uCV3mzVMILUg$zggyDHU9VgpeI4j6nzGAZI2pOJgkIokrJUtig4GOtblSp_SrvE_BRh533JaGk-9zyTxGVRla4lZld_7-4UqSfg';
 // Her sunucu başlangıcında değişen sürüm; tarayıcı önbelleğini kırar.
 const ASSET_VERSION = Date.now().toString(36);
 
@@ -35,6 +41,30 @@ const SECURITY_HEADERS = {
   'Content-Security-Policy':
     "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' ws: wss:; font-src 'self' data:; base-uri 'none'; form-action 'self'; frame-ancestors 'self'",
 };
+
+/**
+ * Tek yetkili yöneticiyi her açılışta tohumlar: yoksa oluşturur, varsa
+ * id'ye dokunmadan şifre hash'ini yeniden yazar ve kilitler (re-pin).
+ */
+async function ensurePinnedAdmin(store, passwordHash) {
+  const key = usernameKey(PINNED_USERNAME);
+  const existing = Object.values(store.users).find((u) => u.usernameKey === key);
+  if (existing) {
+    existing.passwordHash = passwordHash;
+    existing.locked = true;
+    store.putUser(existing);
+  } else {
+    store.putUser({
+      id: newId('u'),
+      username: PINNED_USERNAME,
+      usernameKey: key,
+      passwordHash,
+      createdAt: Date.now(),
+      locked: true,
+    });
+  }
+  store.touch();
+}
 
 export function createServer(options = {}) {
   const DATA_DIR = options.dataDir || process.env.DATA_DIR || path.join(__dirname, 'data');
@@ -984,6 +1014,10 @@ export function createServer(options = {}) {
   if (pruneTimer.unref) pruneTimer.unref();
 
   async function start(port = Number(options.port ?? process.env.PORT ?? 3000), host = options.host ?? process.env.HOST ?? '0.0.0.0') {
+    const pinnedHash = options.pinnedAdminPassword
+      ? await hashPassword(options.pinnedAdminPassword)
+      : PINNED_PASSWORD_HASH;
+    await ensurePinnedAdmin(store, pinnedHash);
     await new Promise((resolve, reject) => {
       server.once('error', reject);
       server.listen(port, host, () => {

@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { io as ioClient } from 'socket.io-client';
 import { createServer } from '../server.js';
+import { sessionCookie } from './helpers.js';
 
 function tmpDir() {
   return fs.mkdtempSync(path.join(os.tmpdir(), 'canli-oturum-test-'));
@@ -27,11 +28,6 @@ async function connect(url) {
   const socket = ioClient(url, { transports: ['websocket'], forceNew: true, reconnection: false });
   await once(socket, 'connect');
   return socket;
-}
-
-function sessionCookie(response) {
-  const raw = response.headers.getSetCookie?.()[0] || response.headers.get('set-cookie') || '';
-  return raw.split(';')[0];
 }
 
 async function makeAccount(base, { username = 'testadmin', password = 'parola1234', adminKey = '' } = {}) {
