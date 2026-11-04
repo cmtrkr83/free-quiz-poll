@@ -30,7 +30,7 @@
   "scripts": {
     "start": "node --env-file-if-exists=.env server.js",
     "dev": "node --env-file-if-exists=.env --watch server.js",
-    "test": "node test/smoke.test.js",
+    "test": "node --test test/smoke.test.js test/auth.test.js",
     "test:ui": "node test/ui.check.mjs"
   },
   "dependencies": {
