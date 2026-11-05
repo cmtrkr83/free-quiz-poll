@@ -481,6 +481,7 @@ select.input option {
   width: 100%;
   max-width: 660px;
   margin: 0 auto;
+  height: 100dvh;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -496,6 +497,14 @@ select.input option {
   gap: 8px;
   padding: 8px 4px;
   min-height: 44px;
+}
+
+.p-top .net {
+  margin-left: 0;
+}
+
+.p-top .theme-toggle {
+  margin-left: auto;
 }
 
 .brand {
@@ -545,6 +554,7 @@ select.input option {
 
 .p-main {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1462,6 +1472,7 @@ select.input option {
     padding: 8px 12px;
     gap: 8px;
   }
+
   .topbar .event-name {
     max-width: 34vw;
     font-size: 14px;
@@ -1507,6 +1518,80 @@ select.input option {
   }
   .code-big {
     font-size: clamp(34px, 11vw, 48px);
+  }
+}
+
+@media (max-width: 640px) {
+  .player {
+    padding-left: 12px;
+    padding-right: 12px;
+    gap: 4px;
+    overflow: hidden;
+  }
+
+  .p-top {
+    padding: 4px 0;
+    min-height: 38px;
+  }
+
+  .brand {
+    font-size: 15px;
+  }
+
+  .brand-mark {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+  }
+
+  .p-main {
+    padding: 2px 0 4px;
+  }
+
+  .screen {
+    gap: 10px;
+  }
+
+  .player .card {
+    padding: 14px;
+  }
+
+  .player .card.tight {
+    padding: 12px;
+  }
+
+  .hero {
+    gap: 8px;
+    padding: 8px 0 4px;
+  }
+
+  .btn-lg {
+    min-height: 48px;
+  }
+
+  .opt {
+    padding: 11px 12px;
+    gap: 8px;
+  }
+
+  .opt .key {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+  }
+
+  .q-prompt {
+    font-size: clamp(20px, 5.4vw, 24px);
+  }
+
+  .pulse {
+    width: 76px;
+    height: 76px;
+  }
+
+  .pulse-core {
+    width: 48px;
+    height: 48px;
   }
 }
 

@@ -154,7 +154,7 @@
   // ---------------------------------------------------------------------------
 
   function eventHead() {
-    const title = S.snapshot?.title || S.event?.title || 'KODM Anket Sistemi';
+    const title = S.snapshot?.title || S.event?.title || 'Anket Sistemi';
     return `
       <div class="event-head">
         <div class="event-title" title="${esc(title)}">${esc(title)}</div>
