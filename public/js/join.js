@@ -173,7 +173,7 @@
   function timerBlock(q) {
     if (!q?.deadline) return '';
     return `
-      <div class="row" style="align-items: flex-end; gap: 14px; margin-top: 14px">
+      <div class="row" style="align-items: flex-end; gap: 12px; margin-top: 12px">
         <div style="flex: 1">
           <div class="timer" data-timer-bar><i></i></div>
         </div>
@@ -222,7 +222,7 @@
     screenEl.innerHTML = `
       <section class="screen">
         <div class="hero">
-          <div class="logo-mark">⚡</div>
+          <div class="logo-mark">${icon('zap', 28)}</div>
           <h1>Canlı Oturum'a katıl</h1>
           <p class="muted">Sunucunun paylaştığı 6 haneli kodu girerek başla.</p>
         </div>
@@ -239,9 +239,9 @@
         </form>
 
         <div class="feature-grid">
-          <div class="feature"><div class="ico">📱</div><div><b>Telefonla katıl</b><span>Uygulama indirmeye gerek yok.</span></div></div>
-          <div class="feature"><div class="ico">⚡</div><div><b>Anında sonuç</b><span>Cevaplar canlı olarak ekranda.</span></div></div>
-          <div class="feature"><div class="ico">🔒</div><div><b>İsimsiz değil, basit</b><span>Sadece kod ve adınız yeterli.</span></div></div>
+          <div class="feature"><div class="ico">${icon('smartphone', 18)}</div><div><b>Telefonla katıl</b><span>Uygulama indirmeye gerek yok.</span></div></div>
+          <div class="feature"><div class="ico">${icon('zap', 18)}</div><div><b>Anında sonuç</b><span>Cevaplar canlı olarak ekranda.</span></div></div>
+          <div class="feature"><div class="ico">${icon('lock', 18)}</div><div><b>Kod ve ad yeterli</b><span>Kayıt yok, uygulama yok.</span></div></div>
         </div>
 
         <p class="muted small center">Yönetici misiniz? <a href="/host">Etkinlik paneli</a></p>
@@ -293,7 +293,7 @@
           <p class="hint center">Adın, sunucunun katılımcı listesinde görünür.</p>
         </div>
         <div class="center">
-          <button class="btn btn-quiet btn-sm" id="change-code" type="button">← Kodu değiştir</button>
+          <button class="btn btn-quiet btn-sm" id="change-code" type="button">${icon('arrow-left', 16)} Kodu değiştir</button>
         </div>
       </section>`;
 
@@ -326,8 +326,8 @@
   function renderJoining() {
     screenEl.innerHTML = `
       <section class="screen center">
-        <div class="pulse"><div class="pulse-core">⚡</div></div>
-        <h2 style="font-size:22px">Oturuma bağlanıyorsun…</h2>
+        <div class="pulse"><div class="pulse-core">${icon('zap', 24)}</div></div>
+        <h2 class="screen-title">Oturuma bağlanıyorsun…</h2>
         <p class="muted small">${esc(S.event?.title || '')}</p>
         <div class="row" style="justify-content:center"><span class="spinner"></span></div>
       </section>`;
@@ -340,10 +340,10 @@
     screenEl.innerHTML = `
       <section class="screen">
         ${eventHead()}
-        <div class="card center stack" style="align-items:center;padding:26px 20px">
-          <div class="pulse"><div class="pulse-core">👋</div></div>
+        <div class="card center stack" style="align-items:center;padding:24px 20px">
+          <div class="pulse"><div class="pulse-core">${icon('hand', 24)}</div></div>
           <div>
-            <h2 style="font-size:23px;font-weight:800;letter-spacing:-.02em">Hoş geldin, ${esc(S.me?.name || S.name)}</h2>
+            <h2 class="screen-title">Hazırsın, ${esc(S.me?.name || S.name)}</h2>
             <p class="muted small" style="margin-top:6px">${esc(snap?.title || S.event?.title || '')}</p>
           </div>
           <div class="stat-grid" style="width:100%">
@@ -362,9 +362,9 @@
   }
 
   function liveResultsHtml(stats) {
-    return `<div data-live-results-block style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line)">
+    return `<div data-live-results-block style="margin-top:16px;padding-top:12px;border-top:1px solid var(--line)">
       <div class="row" style="gap:8px;margin-bottom:8px">
-        <b style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">Canlı sonuçlar</b>
+        <b style="font-size:12px;color:var(--muted)">Canlı sonuçlar</b>
         <span class="spacer"></span>
         <span class="tiny muted">${stats.total || 0} cevap</span>
       </div>
@@ -446,7 +446,7 @@
             ${q.deadline ? '' : ''}
           </div>
           ${timerBlock(q)}
-          <div style="margin-top:18px">${body}</div>
+          <div style="margin-top:16px">${body}</div>
           <div id="live-results-root">${liveStats}</div>
         </div>
       </section>`;
@@ -528,9 +528,9 @@
           <div class="q-index">Soru ${(q.index ?? snap.current ?? 0) + 1} / ${snap.total}</div>
           <h2 class="q-prompt" style="font-size:clamp(19px,4.6vw,23px);margin-top:4px">${esc(q.prompt)}</h2>
           <div class="answered">
-            <div class="check-ring">✓</div>
-            <h3 style="font-size:20px;font-weight:800">Cevabın alındı</h3>
-            ${text ? `<div class="your-answer">✓ ${esc(text)}</div>` : ''}
+            <div class="check-ring">${icon('check', 32)}</div>
+            <h3 style="font-size:20px;font-weight:600">Cevabın alındı</h3>
+            ${text ? `<div class="your-answer">${icon('check', 14)} ${esc(text)}</div>` : ''}
             <p class="muted small">Sonuçlar açıklandığında burada göreceksin.</p>
           </div>
         </div>
@@ -551,7 +551,7 @@
             const isWrong = correctId && isMine && o.id !== correctId;
             return `<div class="res-row ${isCorrect ? 'correct' : ''} ${isMine ? 'mine' : ''} ${isWrong ? 'wrong' : ''}">
               <div class="res-top">
-                <span class="txt">${esc(o.text)} ${isMine ? '<span class="pill" style="padding:2px 7px;font-size:10.5px">senin cevabın</span>' : ''}</span>
+                <span class="txt">${esc(o.text)} ${isMine ? '<span class="pill" style="padding:2px 7px;font-size:11px">senin cevabın</span>' : ''}</span>
                 <span class="num">${o.count} kişi · %${pct}</span>
               </div>
               <div class="res-bar"><span class="res-fill" style="width:${Math.max(pct, o.count ? 4 : 0)}%"></span></div>
@@ -559,13 +559,13 @@
           })
           .join('')}
       </div>`;
-      return total ? rows : '<div class="empty"><div class="big">🫥</div>Bu soruya cevap gelmedi.</div>';
+      return total ? rows : `<div class="empty"><div class="big">${icon('inbox', 28)}</div>Bu soruya cevap gelmedi.</div>`;
     }
     if (stats?.kind === 'rating') {
       const total = stats.total || 0;
       const max = Math.max(1, ...stats.distribution.map((d) => d.count));
       return `<div class="avg"><b>${stats.avg}</b><span>/ 5 · ${total} cevap</span></div>
-        <div class="res" style="margin-top:10px">
+        <div class="res" style="margin-top:8px">
           ${stats.distribution
             .map((d) => {
               const pct = total ? Math.round((d.count / total) * 100) : 0;
@@ -590,7 +590,7 @@
             })
             .join('')}</div>
           <p class="hint center">${stats.total} cevap · ${stats.words.length} farklı ifade</p>`
-        : '<div class="empty"><div class="big">☁️</div>Henüz kelime gelmedi.</div>';
+        : `<div class="empty"><div class="big">${icon('cloud', 28)}</div>Henüz kelime gelmedi.</div>`;
     }
     return stats?.items?.length
       ? `<div class="open-list">${stats.items
@@ -599,8 +599,8 @@
               `<div class="open-item"><span>${esc(item.text)}</span>${item.count > 1 ? `<span class="count">×${item.count}</span>` : ''}</div>`,
           )
           .join('')}</div>
-        <p class="hint center" style="margin-top:10px">${stats.total} cevap · ${stats.unique} farklı yanıt</p>`
-      : '<div class="empty"><div class="big">✍️</div>Henüz cevap gelmedi.</div>';
+        <p class="hint center" style="margin-top:8px">${stats.total} cevap · ${stats.unique} farklı yanıt</p>`
+      : `<div class="empty"><div class="big">${icon('pencil-line', 28)}</div>Henüz cevap gelmedi.</div>`;
   }
 
   function renderResults() {
@@ -619,25 +619,25 @@
     if (isQuiz && hasAnswer) {
       const ok = myValue === correctId;
       banner = `<div class="banner ${ok ? 'good' : 'bad'}">
-        <span style="font-size:20px">${ok ? '🎉' : '💡'}</span>
-        <div><b>${ok ? 'Doğru bildin!' : 'Bu sefer olmadı'}</b>
+        <span style="font-size:20px">${ok ? icon('circle-check', 20) : icon('lightbulb', 20)}</span>
+        <div><b>${ok ? 'Doğru bildin' : 'Bu sefer olmadı'}</b>
         <div class="small" style="opacity:.85">Doğru cevap: ${esc(optionText(q, correctId))}</div></div>
       </div>`;
     } else if (isQuiz && expired) {
       banner = `<div class="banner info"><span style="font-size:20px">⏱</span><div><b>Süren doldu</b><div class="small" style="opacity:.85">Doğru cevap: ${esc(optionText(q, correctId))}</div></div></div>`;
     } else if (isQuiz) {
-      banner = `<div class="banner info"><span style="font-size:20px">💡</span><div>Doğru cevap: <b>${esc(optionText(q, correctId))}</b></div></div>`;
+      banner = `<div class="banner info"><span>${icon('lightbulb', 18)}</span><div>Doğru cevap: <b>${esc(optionText(q, correctId))}</b></div></div>`;
     } else if (expired) {
       banner = `<div class="banner info"><span style="font-size:18px">⏱</span><div><b>Süren doldu</b><div class="small" style="opacity:.85">Sonuçları inceleyip sonraki soruya geçebilirsin.</div></div></div>`;
     } else if (hasAnswer && myValue !== undefined) {
-      banner = `<div class="banner info"><span style="font-size:18px">✓</span><div>Senin cevabın: <b>${esc(answerLabel(q, myValue))}</b></div></div>`;
+      banner = `<div class="banner info"><span>${icon('check', 16)}</span><div>Senin cevabın: <b>${esc(answerLabel(q, myValue))}</b></div></div>`;
     }
 
     const leaders = snap.leaderboard || [];
     const leaderHtml =
       leaders.length && snap.settings?.showLeaderboard !== false
         ? `<div class="card flat tight">
-            <div class="row" style="margin-bottom:10px"><b style="font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">İlk 5</b><span class="spacer"></span><span class="tiny muted">puan</span></div>
+            <div class="row" style="margin-bottom:8px"><b style="font-size:13px;color:var(--muted)">İlk 5</b><span class="spacer"></span><span class="tiny muted">puan</span></div>
             <div class="leader">
               ${leaders
                 .map(
@@ -662,11 +662,11 @@
             <span class="pill phase">Sonuçlar</span>
             <span class="tiny muted">Soru ${(q.index ?? snap.current ?? 0) + 1} / ${snap.total}</span>
           </div>
-          <h2 class="q-prompt" style="font-size:clamp(19px,4.6vw,24px);margin-top:10px">${esc(q.prompt)}</h2>
+          <h2 class="q-prompt" style="font-size:clamp(19px,4.6vw,24px);margin-top:8px">${esc(q.prompt)}</h2>
           <div class="stack" style="margin-top:16px">${banner}${body}</div>
-          <div class="submit-bar" style="margin-top:18px">
+          <div class="submit-bar" style="margin-top:16px">
             <button class="btn btn-primary btn-lg" id="next-q" type="button">
-              ${isLast ? '🏁 Bitir' : 'Sonraki soru →'}
+              ${isLast ? icon('flag', 16) + ' Bitir' : 'Sonraki soru ' + icon('arrow-right', 16)}
             </button>
             <p class="hint center">Kendi hızındasın: hazır olduğunda devam et.</p>
           </div>
@@ -700,10 +700,10 @@
       <section class="screen">
         ${eventHead()}
         <div class="card center stack" style="align-items:center">
-          <div class="logo-mark" style="animation:none">✅</div>
+          <div class="logo-mark" style="animation:none">${icon('circle-check', 28)}</div>
           <div>
-            <h2 style="font-size:23px;font-weight:820;letter-spacing:-.025em">Tüm soruları tamamladın</h2>
-            <p class="muted small" style="margin-top:6px">${esc(S.me?.name || S.name)}, tebrikler!</p>
+            <h2 class="screen-title">Tüm soruları tamamladın</h2>
+            <p class="muted small" style="margin-top:6px">${esc(S.me?.name || S.name)}, tebrikler</p>
           </div>
           ${
             snap?.total
@@ -745,10 +745,10 @@
       <section class="screen">
         ${eventHead()}
         <div class="card center stack" style="align-items:center">
-          <div class="logo-mark" style="animation:none">🏁</div>
+          <div class="logo-mark" style="animation:none">${icon('flag', 28)}</div>
           <div>
-            <h2 style="font-size:24px;font-weight:820;letter-spacing:-.025em">Oturum tamamlandı</h2>
-            <p class="muted small" style="margin-top:6px">Katıldığın için teşekkürler, ${esc(S.me?.name || S.name)}!</p>
+            <h2 class="screen-title">Oturum tamamlandı</h2>
+            <p class="muted small" style="margin-top:6px">Katıldığın için teşekkürler, ${esc(S.me?.name || S.name)}</p>
           </div>
           ${
             snap?.total
@@ -766,7 +766,7 @@
                     .map(
                       (l) => `<div class="p">
                         <div class="nm">${esc(l.name)}</div>
-                        <div class="bar">${l.rank === 1 ? '🏆' : l.rank}</div>
+                        <div class="bar">${l.rank === 1 ? icon('trophy', 16) : l.rank}</div>
                         <div class="sc">${l.score} puan</div>
                       </div>`,
                     )
@@ -783,7 +783,7 @@
     screenEl.innerHTML = `
       <section class="screen">
         <div class="hero">
-          <div class="logo-mark" style="animation:none">🗑️</div>
+          <div class="logo-mark" style="animation:none">${icon('trash-2', 28)}</div>
           <h1>Oturum kapatıldı</h1>
           <p class="muted">Bu etkinlik artık mevcut değil. Yeni bir kod ile tekrar katılabilirsin.</p>
         </div>
@@ -811,8 +811,8 @@
         <div class="card center stack" style="align-items:center;padding:28px 22px">
           <div class="pulse"><div class="pulse-core">⏸</div></div>
           <div>
-            <h2 style="font-size:22px;font-weight:820;letter-spacing:-.02em">Cevaplar şu anda kapalı</h2>
-            <p class="muted small" style="margin-top:7px">
+            <h2 class="screen-title">Cevaplar şu anda kapalı</h2>
+            <p class="muted small" style="margin-top:8px">
               ${esc(S.snapshot?.title || S.event?.title || '')} için yönetici cevap alımını durdurdu.
               Cevaplar yeniden açıldığında soru burada görünecek.
             </p>
@@ -826,7 +826,7 @@
     screenEl.innerHTML = `
       <section class="screen">
         <div class="hero">
-          <div class="logo-mark" style="animation:none">⚠️</div>
+          <div class="logo-mark" style="animation:none">${icon('triangle-alert', 28)}</div>
           <h1>Bir sorun oldu</h1>
           <p class="muted">${esc(S.error || 'Bağlantı kurulamadı.')}</p>
         </div>

@@ -331,6 +331,9 @@ Host requests are authenticated with the session cookie. Legacy clients may send
 MIT © 2026 Cem Türker — see [LICENSE](LICENSE). You may use, modify and redistribute the app,
 including commercially, as long as the copyright notice is kept.
 
+The interface polish follows **unslop** by [Damir Sokolovsky (@heydamir)](https://x.com/heydamir)
+([heydamir.design/unslop](https://heydamir.design/unslop)), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+
 ## Support
 
 If Free Quiz & Poll saves you a paid subscription, you can buy me a coffee:

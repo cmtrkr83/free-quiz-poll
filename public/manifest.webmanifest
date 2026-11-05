@@ -4,8 +4,8 @@
   "description": "Canlı anket, quiz ve kelime bulutu. Telefonunuzla katılın.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#070a14",
-  "theme_color": "#070a14",
+  "background_color": "#07080d",
+  "theme_color": "#07080d",
   "lang": "tr",
   "icons": [
     {

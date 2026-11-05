@@ -3,7 +3,7 @@
   'use strict';
 
   const KEY = 'co:theme';
-  const COLORS = { dark: '#070a14', light: '#f3f5fb' };
+  const COLORS = { dark: '#07080d', light: '#f7f4ee' };
 
   function savedTheme() {
     try {
@@ -39,12 +39,15 @@
   function updateButtons() {
     const theme = current();
     const next = theme === 'dark' ? 'light' : 'dark';
-    const icon = theme === 'dark' ? '☀' : '☾';
+    const iconName = theme === 'dark' ? 'sun' : 'moon';
     const title = next === 'light' ? 'Açık temaya geç' : 'Karanlık temaya geç';
     document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
       // Aynı değeri yeniden yazmak DOM değişikliği üretir ve MutationObserver'ı
       // tekrar tetikleyerek sonsuz yenileme döngüsüne yol açar.
-      if (button.textContent !== icon) button.textContent = icon;
+      if (button.dataset.iconName !== iconName) {
+        button.dataset.iconName = iconName;
+        button.innerHTML = window.icon ? window.icon(iconName, 18) : '';
+      }
       if (button.title !== title) button.title = title;
       if (button.getAttribute('aria-label') !== title) button.setAttribute('aria-label', title);
       const pressed = String(theme === 'light');

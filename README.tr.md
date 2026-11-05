@@ -392,3 +392,6 @@ Yönetici istekleri oturum çereziyle doğrulanır. Eski istemciler için anahta
 
 MIT © 2026 Cem Türker — ayrıntılar için [LICENSE](LICENSE). Telif bildirimi korunduğu sürece
 uygulamayı ticari kullanım dahil özgürce kullanabilir, değiştirebilir ve dağıtabilirsin.
+
+Arayüz iyileştirmesi [unslop](https://heydamir.design/unslop) yöntemiyle yapıldı —
+Damir Sokolovsky ([@heydamir](https://x.com/heydamir)), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).

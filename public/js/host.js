@@ -201,7 +201,7 @@
         <div class="modal-head">
           <h3>${esc(title)}</h3>
           <span class="spacer"></span>
-          <button class="icon-btn" type="button" data-close aria-label="Kapat">✕</button>
+          <button class="icon-btn" type="button" data-close aria-label="Kapat">${icon('x', 16)}</button>
         </div>
         <div class="modal-body">${body}</div>
         ${footer ? `<div class="modal-foot">${footer}</div>` : ''}
@@ -235,7 +235,7 @@
       openModal({
         title,
         narrow: true,
-        body: `<p class="muted" style="font-size:14.5px;line-height:1.55">${esc(message)}</p>`,
+        body: `<p class="muted" style="font-size:14px;line-height:1.55">${esc(message)}</p>`,
         footer: `<span class="spacer"></span>
           <button class="btn btn-ghost" type="button" data-cancel>Vazgeç</button>
           <button class="btn ${danger ? 'btn-danger' : 'btn-primary'}" type="button" data-ok>${esc(confirmText)}</button>`,
@@ -287,7 +287,7 @@
   function renderMissing() {
     root.innerHTML = `
       <div class="empty" style="padding-top: 18vh;max-width:440px;margin:0 auto">
-        <div class="big">🔍</div>
+        <div class="big">${icon('search', 28)}</div>
         <h2 style="font-size:20px;color:var(--text);margin-bottom:6px">Etkinlik bulunamadı</h2>
         <p>Bu kodla bir etkinlik yok veya silinmiş olabilir.</p>
         <a class="btn btn-primary" href="/host" style="margin-top:16px">Etkinlik paneline dön</a>
@@ -298,7 +298,7 @@
     const title = S.meta?.title ? esc(S.meta.title) : 'Yönetici girişi';
     root.innerHTML = `
       <header class="topbar">
-        <a class="brand" href="/host"><span class="brand-mark">⚡</span><span class="brand-name">Canlı Oturum</span></a>
+        <a class="brand" href="/host"><span class="brand-mark">${icon('zap', 16)}</span><span class="brand-name">Canlı Oturum</span></a>
         <span class="sep"></span>
         <span class="pill">${esc(S.code || '')}</span>
         <span class="spacer"></span>
@@ -306,10 +306,10 @@
       </header>
       <main class="home-wrap" style="max-width:520px;padding-top:clamp(30px,8vh,90px)">
         <div class="card stack">
-          <div class="center stack" style="align-items:center;gap:10px">
-            <div class="logo-mark" style="animation:none;width:52px;height:52px;border-radius:16px;font-size:24px">🔐</div>
+          <div class="center stack" style="align-items:center;gap:8px">
+            <div class="logo-mark" style="animation:none;width:52px;height:52px;border-radius:14px">${icon('lock', 22)}</div>
             <div>
-              <h1 style="font-size:22px;font-weight:800;letter-spacing:-.02em">${title}</h1>
+              <h1 class="screen-title">${title}</h1>
               <p class="muted small" style="margin-top:4px">Bu etkinliği yönetmek için yönetici anahtarını gir.</p>
             </div>
           </div>
@@ -549,19 +549,19 @@
     const title = mode === 'register' ? 'Yönetici hesabı oluştur' : 'Yönetici girişi';
     root.innerHTML = `
       <header class="topbar">
-        <a class="brand" href="/host"><span class="brand-mark">⚡</span><span class="brand-name">Canlı Oturum</span></a>
+        <a class="brand" href="/host"><span class="brand-mark">${icon('zap', 16)}</span><span class="brand-name">Canlı Oturum</span></a>
         <span class="pill">Yönetici</span>
         <span class="spacer"></span>
-        <a class="btn btn-ghost btn-sm" href="/" target="_blank" rel="noopener">Katılımcı ekranı ↗</a>
+        <a class="btn btn-ghost btn-sm" href="/" target="_blank" rel="noopener">Katılımcı ekranı ${icon('external-link', 14)}</a>
       </header>
 
       <main class="home-wrap" style="max-width:540px;padding-top:clamp(28px,7vh,76px)">
         <div class="card stack" style="gap:16px">
-          <div class="center stack" style="align-items:center;gap:10px;text-align:center">
-            <div class="logo-mark" style="animation:none;width:54px;height:54px;border-radius:17px;font-size:26px">🔐</div>
+          <div class="center stack" style="align-items:center;gap:8px;text-align:center">
+            <div class="logo-mark" style="animation:none;width:54px;height:54px;border-radius:14px">${icon('lock', 24)}</div>
             <div>
-              <h1 style="font-size:23px;font-weight:820;letter-spacing:-.025em">${esc(title)}</h1>
-              <p class="muted small" style="margin-top:5px">
+              <h1 class="screen-title">${esc(title)}</h1>
+              <p class="muted small" style="margin-top:4px">
                 Etkinliklerin hesabında saklanır; daha sonra açıp yeniden kullanabilirsin.
               </p>
             </div>
@@ -575,7 +575,7 @@
           ${
             mode === 'register' && config.registrationOpen === false
               ? `<div class="center stack" style="align-items:center;gap:8px;text-align:center;padding:8px 0 4px">
-                  <p style="font-weight:700">Yeni kayıt kapalıdır</p>
+                  <p style="font-weight:600">Yeni kayıt kapalıdır</p>
                   <p class="muted small">Bu sunucuda tek yönetici hesabı bulunur. Mevcut hesabınla giriş yapabilirsin.</p>
                 </div>`
               : `<form id="auth-form" class="stack" novalidate>
@@ -741,12 +741,12 @@
             <span class="event-code">${esc(ev.code)}</span>
             ${eventStatusHtml(ev)}
           </div>
-          <div class="tiny muted" style="margin-top:5px">
+          <div class="tiny muted" style="margin-top:4px">
             ${esc(phase)} · ${ev.total || 0} soru · ${ev.participants || 0} katılımcı · ${esc(elapsedLabel(ev.updatedAt || ev.createdAt))}
           </div>
         </div>
       </div>
-      <div class="actions" style="margin-top:10px;gap:6px">
+      <div class="actions" style="margin-top:8px;gap:6px">
         <a class="btn btn-primary btn-sm" href="/h/${esc(ev.code)}">Aç</a>
         <button class="btn btn-ghost btn-sm" type="button" data-action="event-toggle" data-code="${esc(ev.code)}"
           data-next="${ev.acceptingResponses === false ? 'true' : 'false'}">
@@ -794,16 +794,16 @@
     document.title = 'Canlı Oturum — Yönetici';
     root.innerHTML = `
       <header class="topbar">
-        <a class="brand" href="/host"><span class="brand-mark">⚡</span><span class="brand-name">Canlı Oturum</span></a>
+        <a class="brand" href="/host"><span class="brand-mark">${icon('zap', 16)}</span><span class="brand-name">Canlı Oturum</span></a>
         <span class="pill">Yönetici paneli</span>
         <span class="spacer"></span>
-        <span class="pill user-pill" title="Giriş yapılan hesap">👤 ${esc(S.user?.username || '')}</span>
+        <span class="pill user-pill" title="Giriş yapılan hesap">${esc(S.user?.username || '')}</span>
         <button class="btn btn-ghost btn-sm" type="button" data-action="logout">Çıkış</button>
-        <a class="btn btn-ghost btn-sm" href="/" target="_blank" rel="noopener">Katılımcı ekranı ↗</a>
+        <a class="btn btn-ghost btn-sm" href="/" target="_blank" rel="noopener">Katılımcı ekranı ${icon('external-link', 14)}</a>
       </header>
 
       <main class="home-wrap">
-        <div class="stack" style="gap:22px">
+        <div class="stack" style="gap:20px">
           <div class="home-grid">
             <form class="card stack" id="create-form">
               <div>
@@ -840,7 +840,7 @@
                     events.length
                       ? `<div class="stack event-list" id="event-list" style="gap:6px">${events.map(eventRowHtml).join('')}</div>`
                       : `<div class="empty" style="padding:24px 12px">
-                          <div class="big">🗂️</div>
+                          <div class="big">${icon('archive', 28)}</div>
                           Henüz etkinlik yok.<br /><span class="tiny">Oluşturduğun etkinlikler burada listelenir.</span>
                         </div>`
                   }
@@ -850,11 +850,11 @@
           </div>
 
           <div class="feature-grid">
-            <div class="feature"><div class="ico">🛡️</div><div><b>Kendi sunucunda</b><span>Veriler sende kalır; dışarıya hiçbir şey gönderilmez.</span></div></div>
-            <div class="feature"><div class="ico">📱</div><div><b>Telefonla katılım</b><span>QR okut veya kodu gir. Uygulama gerekmez.</span></div></div>
-            <div class="feature"><div class="ico">📊</div><div><b>Canlı sonuçlar</b><span>Her cevap anında grafiklere düşer.</span></div></div>
-            <div class="feature"><div class="ico">🏆</div><div><b>Quiz & puan tablosu</b><span>Süreli sorular, doğru cevap ve sıralama.</span></div></div>
-            <div class="feature"><div class="ico">📥</div><div><b>CSV dışa aktarma</b><span>Tüm cevapları tek dosyada indir.</span></div></div>
+            <div class="feature"><div class="ico">${icon('shield-check', 18)}</div><div><b>Kendi sunucunda</b><span>Veriler sende kalır; dışarıya hiçbir şey gönderilmez.</span></div></div>
+            <div class="feature"><div class="ico">${icon('smartphone', 18)}</div><div><b>Telefonla katılım</b><span>QR okut veya kodu gir. Uygulama gerekmez.</span></div></div>
+            <div class="feature"><div class="ico">${icon('chart-column', 18)}</div><div><b>Canlı sonuçlar</b><span>Her cevap anında grafiklere düşer.</span></div></div>
+            <div class="feature"><div class="ico">${icon('trophy', 18)}</div><div><b>Quiz & puan tablosu</b><span>Süreli sorular, doğru cevap ve sıralama.</span></div></div>
+            <div class="feature"><div class="ico">${icon('download', 18)}</div><div><b>CSV dışa aktarma</b><span>Tüm cevapları tek dosyada indir.</span></div></div>
           </div>
         </div>
       </main>`;
@@ -902,7 +902,7 @@
           <div>
             <label class="label" for="new-code-input">Yeni kod</label>
             <input id="new-code-input" class="input" maxlength="12" autocomplete="off"
-              style="text-transform:uppercase;letter-spacing:.14em;font-weight:750" placeholder="Yeni kod (4-12)" />
+              style="text-transform:uppercase;letter-spacing:.06em;font-weight:600" placeholder="Yeni kod (4-12)" />
             <p class="hint" style="margin-top:6px">Boş bırakırsan rastgele yeni bir kod üretilir.</p>
           </div>
           <p class="err" id="new-code-err"></p>
@@ -991,17 +991,17 @@
 
     root.innerHTML = `
       <header class="topbar">
-        <a class="brand" href="/host" title="Etkinlikler"><span class="brand-mark">⚡</span><span class="brand-name">Canlı Oturum</span></a>
+        <a class="brand" href="/host" title="Etkinlikler"><span class="brand-mark">${icon('zap', 16)}</span><span class="brand-name">Canlı Oturum</span></a>
         <span class="sep"></span>
         <span class="event-name" title="${esc(st.title)}">${esc(st.title)}</span>
         <span class="event-code">${esc(st.code)}</span>
         <span class="spacer"></span>
         <span class="pill live" title="Katılımcı sayısı"><span class="dot" id="conn-dot"></span><span data-live-participants>${st.participants.length}</span> katılımcı</span>
         <span class="pill" id="conn-pill"><span id="conn-label">${S.connected ? 'Canlı' : 'Bağlantı yok'}</span></span>
-        ${S.user ? `<span class="pill user-pill" title="Giriş yapılan hesap">👤 ${esc(S.user.username)}</span>` : ''}
-        <button class="icon-btn" data-action="qr" title="Katılım QR kodu">▦</button>
+        ${S.user ? `<span class="pill user-pill" title="Giriş yapılan hesap">${esc(S.user.username)}</span>` : ''}
+        <button class="icon-btn" data-action="qr" title="Katılım QR kodu">${icon('qr-code', 18)}</button>
         <button class="icon-btn" data-action="export" title="Dışa aktar">⤓</button>
-        <button class="btn btn-ghost btn-sm" data-action="settings" title="Oturum ayarları">⚙ Ayarlar</button>
+        <button class="btn btn-ghost btn-sm" data-action="settings" title="Oturum ayarları">${icon('settings', 16)} Ayarlar</button>
         <a class="btn btn-ghost btn-sm" href="/host">Etkinlikler</a>
         ${S.user ? '<button class="btn btn-ghost btn-sm" data-action="logout">Çıkış</button>' : ''}
       </header>
@@ -1015,18 +1015,18 @@
               <span class="spacer"></span>
               <span class="pill phase">${phaseLabel(st.phase)}</span>
             </div>
-            <div class="panel-body stack" style="gap:10px">
+            <div class="panel-body stack" style="gap:8px">
               <div class="actions" style="gap:8px">
                 <button class="btn btn-ghost btn-sm" data-action="questions" title="Soruları görüntüle">
-                  📋 Sorular <span class="count-chip">${st.total}</span>
+                  ${icon('list-checks', 16)} Sorular <span class="count-chip">${st.total}</span>
                 </button>
                 <button class="btn btn-ghost btn-sm" data-action="participants" title="Katılımcıları görüntüle">
-                  👥 Katılımcılar <span class="count-chip" data-live-participants>${st.participants.length}</span>
+                  ${icon('users', 16)} Katılımcılar <span class="count-chip" data-live-participants>${st.participants.length}</span>
                 </button>
               </div>
               <div class="join-link">
                 <code style="font-size:12px">${esc(joinUrl())}</code>
-                <button class="icon-btn" style="width:34px;height:34px" data-action="copy" data-copy="${esc(joinUrl())}" title="Bağlantıyı kopyala">⧉</button>
+                <button class="icon-btn" style="width:34px;height:34px" data-action="copy" data-copy="${esc(joinUrl())}" title="Bağlantıyı kopyala">${icon('copy', 16)}</button>
               </div>
               <div class="actions" style="margin-top:2px">
                 ${
@@ -1072,7 +1072,7 @@
     if (!st.questions.length) {
       return `<div class="empty" style="padding:20px 10px">
         Henüz soru yok.
-        ${st.phase === 'lobby' ? '<div style="margin-top:10px"><button class="btn btn-ghost btn-sm" data-action="edit">Soru ekle</button></div>' : ''}
+        ${st.phase === 'lobby' ? '<div style="margin-top:8px"><button class="btn btn-ghost btn-sm" data-action="edit">Soru ekle</button></div>' : ''}
       </div>`;
     }
     return `<div class="q-list">
@@ -1096,7 +1096,7 @@
   function participantsHtml(st) {
     if (!st.participants.length) {
       return `<div class="empty" style="padding:20px 10px">
-        <div class="big">👥</div>
+        <div class="big">${icon('users', 28)}</div>
         Henüz kimse katılmadı.<br /><span class="tiny">QR kodu veya bağlantıyı paylaş.</span>
       </div>`;
     }
@@ -1110,7 +1110,7 @@
             <span class="st ${p.online ? 'on' : ''}" title="${p.online ? 'Çevrimiçi' : 'Çevrimdışı'}"></span>
             <span class="avatar" style="width:22px;height:22px;font-size:10px">${esc(initials(p.name))}</span>
             <span class="nm">${esc(p.name)}</span>
-            <span class="sc" title="${p.done ? 'Tüm soruları bitirdi' : 'Şu anki soru'}">${p.done ? '✓ bitti' : `${p.progress}/${st.total}`}</span>
+            <span class="sc" title="${p.done ? 'Tüm soruları bitirdi' : 'Şu anki soru'}">${p.done ? icon('check', 14) + ' bitti' : `${p.progress}/${st.total}`}</span>
             ${p.score ? `<span class="sc">${p.score} p</span>` : ''}
           </div>`,
         )
@@ -1126,7 +1126,7 @@
   function stageHtml(st) {
     const closed =
       st.settings?.acceptingResponses === false
-        ? `<div class="banner bad" style="margin-bottom:14px">
+        ? `<div class="banner bad" style="margin-bottom:12px">
             <span style="font-size:18px">⏸</span>
             <div><b>Cevaplar kapalı</b><div class="small" style="opacity:.85">Katılımcılar şu anda cevap gönderemiyor. Üstteki “Ayarlar” düğmesinden “Cevaplara açık” anahtarını kullanabilirsin.</div></div>
           </div>`
@@ -1144,14 +1144,14 @@
           <div class="qr-box">
             <img src="/api/events/${encodeURIComponent(st.code)}/qr.png?size=720" alt="Katılım QR kodu" width="232" height="232" />
           </div>
-          <div class="join-info stack" style="gap:14px">
+          <div class="join-info stack" style="gap:12px">
             <div>
               <div class="q-index">Katılım kodu</div>
               <div class="code-big" style="margin-top:4px">${esc(st.code)}</div>
             </div>
             <div class="join-link">
               <code>${esc(url)}</code>
-              <button class="icon-btn" style="width:38px;height:38px" data-action="copy" data-copy="${esc(url)}" title="Bağlantıyı kopyala">⧉</button>
+              <button class="icon-btn" style="width:38px;height:38px" data-action="copy" data-copy="${esc(url)}" title="Bağlantıyı kopyala">${icon('copy', 16)}</button>
             </div>
             <div class="row wrap">
               <span class="pill live"><span class="dot"></span><span data-live-participants>${st.participants.length}</span> katılımcı</span>
@@ -1174,9 +1174,9 @@
       </div>
 
       <div class="feature-grid">
-        <div class="feature"><div class="ico">1️⃣</div><div><b>Katılımcılar bağlanır</b><span>QR veya 6 haneli kod ile, uygulama gerekmez.</span></div></div>
-        <div class="feature"><div class="ico">2️⃣</div><div><b>Oturumu başlatırsın</b><span>Katılımcılar soruları kendi hızında, belirlenen süreyle yanıtlar.</span></div></div>
-        <div class="feature"><div class="ico">3️⃣</div><div><b>Sonuçlar canlı akar</b><span>Grafikler, kelime bulutu ve puan tablosu.</span></div></div>
+        <div class="feature"><div class="ico step-n">1</div><div><b>Katılımcılar bağlanır</b><span>QR veya 6 haneli kod ile, uygulama gerekmez.</span></div></div>
+        <div class="feature"><div class="ico step-n">2</div><div><b>Oturumu başlatırsın</b><span>Katılımcılar soruları kendi hızında, belirlenen süreyle yanıtlar.</span></div></div>
+        <div class="feature"><div class="ico step-n">3</div><div><b>Sonuçlar canlı akar</b><span>Grafikler, kelime bulutu ve puan tablosu.</span></div></div>
       </div>`;
   }
 
@@ -1192,13 +1192,13 @@
     let actions = '';
     if (st.phase === 'ended') {
       actions = `<div class="actions">
-        <button class="btn btn-primary" data-action="resetLobby">↩ Başlangıca dön</button>
+        <button class="btn btn-primary" data-action="resetLobby">${icon('rotate-ccw', 16)} Başlangıca dön</button>
         <button class="btn btn-ghost" data-action="restart">Yeni oturum (katılımcıları sıfırla)</button>
       </div>`;
     } else {
       actions = `<div class="actions">
-        <button class="btn btn-ghost btn-sm" data-action="q-open" data-index="${Math.max(0, st.current - 1)}" ${st.current <= 0 ? 'disabled' : ''}>← Önceki</button>
-        <button class="btn btn-ghost btn-sm" data-action="q-open" data-index="${Math.min(st.total - 1, st.current + 1)}" ${st.current >= st.total - 1 ? 'disabled' : ''}>Sonraki →</button>
+        <button class="btn btn-ghost btn-sm" data-action="q-open" data-index="${Math.max(0, st.current - 1)}" ${st.current <= 0 ? 'disabled' : ''}>${icon('arrow-left', 16)} Önceki</button>
+        <button class="btn btn-ghost btn-sm" data-action="q-open" data-index="${Math.min(st.total - 1, st.current + 1)}" ${st.current >= st.total - 1 ? 'disabled' : ''}>Sonraki ${icon('arrow-right', 16)}</button>
         <span class="spacer"></span>
         <button class="btn btn-quiet btn-sm" data-action="resetAnswers">Cevapları sıfırla</button>
         <button class="btn btn-danger btn-sm" data-action="end">Oturumu kapat</button>
@@ -1240,7 +1240,7 @@
     const q = st.questions[st.current];
     const stats = st.stats;
     if (!q || !stats) {
-      return `<div class="empty" style="padding:26px 0 14px"><div class="big">⏳</div>Cevaplar bekleniyor…</div>`;
+      return `<div class="empty" style="padding:24px 0 14px"><div class="big">⏳</div>Cevaplar bekleniyor…</div>`;
     }
 
     if (stats.kind === 'choice') {
@@ -1259,7 +1259,7 @@
           </div>`;
         })
         .join('');
-      return `<div class="stack" style="margin-top:18px;gap:10px">
+      return `<div class="stack" style="margin-top:16px;gap:8px">
         <div class="res">${rows}</div>
         <div class="kv"><span>${total} cevap</span><span>·</span><span>${stats.total ? Math.round((stats.total / Math.max(1, st.participants.length)) * 100) : 0}% katılım</span></div>
       </div>`;
@@ -1268,7 +1268,7 @@
     if (stats.kind === 'rating') {
       const total = stats.total || 0;
       const max = Math.max(1, ...stats.distribution.map((d) => d.count));
-      return `<div class="stack" style="margin-top:14px;gap:8px">
+      return `<div class="stack" style="margin-top:12px;gap:8px">
         <div class="avg"><b>${stats.avg}</b><span>/ 5 · ${total} cevap</span></div>
         <div class="res">
           ${stats.distribution
@@ -1287,11 +1287,11 @@
 
     if (stats.kind === 'wordcloud') {
       if (!stats.words.length) {
-        return `<div class="empty" style="padding:26px 0 14px"><div class="big">☁️</div>Kelime bekleniyor…</div>`;
+        return `<div class="empty" style="padding:24px 0 14px"><div class="big">${icon('cloud', 28)}</div>Kelime bekleniyor…</div>`;
       }
       const max = Math.max(1, ...stats.words.map((w) => w.count));
       const colors = ['#c7c0ff', '#8fb4ff', '#67e8f9', '#a7f3d0', '#fde68a', '#fca5a5', '#f0abfc', '#93c5fd'];
-      return `<div class="cloud" style="margin-top:10px">
+      return `<div class="cloud" style="margin-top:8px">
         ${stats.words
           .map((w, i) => {
             const ratio = w.count / max;
@@ -1304,7 +1304,7 @@
     }
 
     if (!stats.items.length) {
-      return `<div class="empty" style="padding:26px 0 14px"><div class="big">✍️</div>Cevaplar bekleniyor…</div>`;
+      return `<div class="empty" style="padding:24px 0 14px"><div class="big">${icon('pencil-line', 28)}</div>Cevaplar bekleniyor…</div>`;
     }
     return `<div class="stack" style="margin-top:16px;gap:8px">
       <div class="open-list" style="max-height:38dvh">
@@ -1409,7 +1409,7 @@
     openModal({
       title: 'Katılımcılar',
       body: `
-        <div class="stack" style="gap:10px">
+        <div class="stack" style="gap:8px">
           <div class="row wrap" style="gap:8px">
             <span class="pill live"><span class="dot"></span><span data-live-participants>${st.participants.length}</span> katılımcı</span>
             <span class="pill"><span data-live-online>${st.online || 0}</span> çevrimiçi</span>
@@ -1428,7 +1428,7 @@
       title: 'Katılım bağlantısı',
       narrow: true,
       body: `
-        <div class="stack" style="align-items:center;gap:14px">
+        <div class="stack" style="align-items:center;gap:12px">
           <div class="qr-box" style="width:min(320px, 78vw)">
             <img src="/api/events/${encodeURIComponent(S.code)}/qr.png?size=720" alt="Katılım QR kodu" />
           </div>
@@ -1440,7 +1440,7 @@
           <p class="hint center">Telefon kamerasıyla QR kodu okutabilir veya adrese girip kodu yazabilirler.</p>
         </div>`,
       footer: `<span class="spacer"></span>
-        <a class="btn btn-primary" href="${esc(url)}" target="_blank" rel="noopener">Katılımcı ekranını aç ↗</a>`,
+        <a class="btn btn-primary" href="${esc(url)}" target="_blank" rel="noopener">Katılımcı ekranını aç ${icon('external-link', 14)}</a>`,
     });
   }
 
@@ -1459,12 +1459,12 @@
             <div class="big-stat"><b>${st.total}</b><span>soru</span></div>
           </div>
           <div class="feature">
-            <div class="ico">📋</div>
+            <div class="ico">${icon('list-checks', 18)}</div>
             <div><b>Katılımcı cevapları</b><span>Her katılımcı için puan ve tüm cevaplar (CSV).</span></div>
           </div>
           <a class="btn btn-primary" href="${base}?mode=participants" download>Katılımcı cevaplarını indir</a>
           <div class="feature">
-            <div class="ico">📈</div>
+            <div class="ico">${icon('chart-column', 18)}</div>
             <div><b>Özet rapor</b><span>Soru bazında seçenek dağılımı, yüzdeler ve doğru cevaplar.</span></div>
           </div>
           <a class="btn btn-ghost" href="${base}?mode=summary" download>Özet raporu indir</a>
@@ -1484,7 +1484,7 @@
           ${switchHtml('liveResults', 'Canlı sonuçlar', 'Katılımcılar cevap vermeden önce de sonuçları görsün.', st.settings.liveResults)}
           ${switchHtml('showLeaderboard', 'Puan tablosu', 'Sonuç ekranında ilk 5 gösterilsin.', st.settings.showLeaderboard)}
           ${switchHtml('joinClosed', 'Katılımı kapat', 'Yeni katılımcı alınmasın.', st.settings.joinClosed)}
-          <div style="border-top:1px solid var(--line);margin:10px 0 4px"></div>
+          <div style="border-top:1px solid var(--line);margin:8px 0 4px"></div>
           <div class="actions">
             <button class="btn btn-ghost btn-sm" type="button" data-action="rename">Başlığı düzenle</button>
             <button class="btn btn-ghost btn-sm" type="button" data-action="change-code">Kodu değiştir</button>
@@ -1624,13 +1624,13 @@
       title: `Sorular · ${list.length}`,
       wide: true,
       body: `
-        <div class="stack" style="gap:14px">
+        <div class="stack" style="gap:12px">
           <p class="hint">Değişiklikler <b>Kaydet</b> ile yayınlanır. Oturum başladıktan sonra sorular kilitlenir.</p>
           ${
             list.length
               ? `<div class="editor-list">${list.map((q, i) => questionEditorHtml(q, i)).join('')}</div>`
               : `<div class="empty" style="border:1px dashed var(--line-strong);border-radius:16px">
-                  <div class="big">📝</div>
+                  <div class="big">${icon('pencil-line', 28)}</div>
                   Henüz soru yok. Aşağıdan bir soru türü ekle.
                 </div>`
           }
@@ -1697,14 +1697,14 @@
               (o) => `<div class="opt-edit">
                 ${
                   q.type === 'quiz'
-                    ? `<button type="button" class="pick ${q.correctId === o.id ? 'on' : ''}" data-act="correct" data-i="${i}" data-opt="${esc(o.id)}" title="Doğru cevap" aria-label="Doğru cevap olarak işaretle">✓</button>`
+                    ? `<button type="button" class="pick ${q.correctId === o.id ? 'on' : ''}" data-act="correct" data-i="${i}" data-opt="${esc(o.id)}" title="Doğru cevap" aria-label="Doğru cevap olarak işaretle">${icon('check', 16)}</button>`
                     : '<span class="handle">•</span>'
                 }
                 <input class="input" data-field="opt" data-i="${i}" data-optid="${esc(o.id)}" value="${esc(o.text)}"
                   maxlength="100" placeholder="Seçenek metni" aria-label="Seçenek ${i + 1}" />
                 <button type="button" class="icon-btn" style="width:34px;height:34px;font-size:13px"
                   data-act="opt-del" data-i="${i}" data-opt="${esc(o.id)}" title="Seçeneği sil"
-                  ${q.options.length <= 2 ? 'disabled' : ''}>✕</button>
+                  ${q.options.length <= 2 ? 'disabled' : ''}>${icon('x', 16)}</button>
               </div>`,
             )
             .join('')}
@@ -1734,12 +1734,12 @@
               .join('')}
           </select>
           <span class="spacer"></span>
-          <button type="button" class="icon-btn" data-act="up" data-i="${i}" title="Yukarı taşı" ${i === 0 ? 'disabled' : ''}>↑</button>
-          <button type="button" class="icon-btn" data-act="down" data-i="${i}" title="Aşağı taşı" ${i === S.editor.questions.length - 1 ? 'disabled' : ''}>↓</button>
+          <button type="button" class="icon-btn" data-act="up" data-i="${i}" title="Yukarı taşı" ${i === 0 ? 'disabled' : ''}>${icon('chevron-up', 16)}</button>
+          <button type="button" class="icon-btn" data-act="down" data-i="${i}" title="Aşağı taşı" ${i === S.editor.questions.length - 1 ? 'disabled' : ''}>${icon('chevron-down', 16)}</button>
           <button type="button" class="icon-btn" data-act="copy" data-i="${i}" title="Kopyala">⧉</button>
           <button type="button" class="icon-btn ${S.previewIndex === i ? 'active' : ''}" data-act="preview" data-i="${i}"
-            title="Katılımcı önizlemesi" aria-label="Katılımcı önizlemesini göster" aria-pressed="${S.previewIndex === i}">👁</button>
-          <button type="button" class="icon-btn" data-act="del" data-i="${i}" title="Soruyu sil">🗑</button>
+            title="Katılımcı önizlemesi" aria-label="Katılımcı önizlemesini göster" aria-pressed="${S.previewIndex === i}">${icon('eye', 16)}</button>
+          <button type="button" class="icon-btn" data-act="del" data-i="${i}" title="Soruyu sil">${icon('trash-2', 16)}</button>
         </div>
 
         <textarea class="input" rows="2" maxlength="240" data-field="prompt" data-i="${i}"
@@ -1813,7 +1813,7 @@
         <div class="preview-head">
           <span class="preview-live"><i></i> Canlı önizleme</span>
           <span class="spacer"></span>
-          <button class="icon-btn" type="button" data-preview-close aria-label="Önizlemeyi kapat" title="Önizlemeyi kapat">✕</button>
+          <button class="icon-btn" type="button" data-preview-close aria-label="Önizlemeyi kapat" title="Önizlemeyi kapat">${icon('x', 16)}</button>
         </div>
         <div class="preview-note">Katılımcının telefonunda böyle görünecek · kaydedilmemiş değişiklikler dahil</div>
         <div class="preview-body"><div class="player" id="preview-player"></div></div>`;
@@ -1900,13 +1900,13 @@
           </div>
           ${
             q.timeLimit > 0
-              ? `<div class="row" style="align-items:flex-end;gap:14px;margin-top:14px">
+              ? `<div class="row" style="align-items:flex-end;gap:12px;margin-top:12px">
                   <div style="flex:1"><div class="timer"><i></i></div></div>
                   <div class="timer-num">${q.timeLimit}</div>
                 </div>`
               : ''
           }
-          <div style="margin-top:18px">${body}</div>
+          <div style="margin-top:16px">${body}</div>
         </div>
       </section>`;
   }
