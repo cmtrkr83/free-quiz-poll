@@ -1,6 +1,6 @@
 {
-  "name": "Canlı Oturum",
-  "short_name": "Canlı Oturum",
+  "name": "KODM Anket Sistemi",
+  "short_name": "KODM Anket Sistemi",
   "description": "Canlı anket, quiz ve kelime bulutu. Telefonunuzla katılın.",
   "start_url": "/",
   "display": "standalone",

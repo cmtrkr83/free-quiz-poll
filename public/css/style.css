@@ -2125,6 +2125,7 @@ select.input option {
   height: 36px;
   font-size: 15px;
   line-height: 1;
+  margin-left: auto;
 }
 .user-pill {
   max-width: 190px;

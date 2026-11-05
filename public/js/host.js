@@ -298,7 +298,7 @@
     const title = S.meta?.title ? esc(S.meta.title) : 'Yönetici girişi';
     root.innerHTML = `
       <header class="topbar">
-        <a class="brand" href="/host"><span class="brand-mark">${icon('zap', 16)}</span><span class="brand-name">Canlı Oturum</span></a>
+        <a class="brand" href="/host"><span class="brand-mark">${icon('zap', 16)}</span><span class="brand-name">KODM Anket Sistemi</span></a>
         <span class="sep"></span>
         <span class="pill">${esc(S.code || '')}</span>
         <span class="spacer"></span>
@@ -549,7 +549,7 @@
     const title = mode === 'register' ? 'Yönetici hesabı oluştur' : 'Yönetici girişi';
     root.innerHTML = `
       <header class="topbar">
-        <a class="brand" href="/host"><span class="brand-mark">${icon('zap', 16)}</span><span class="brand-name">Canlı Oturum</span></a>
+        <a class="brand" href="/host"><span class="brand-mark">${icon('zap', 16)}</span><span class="brand-name">KODM Anket Sistemi</span></a>
         <span class="pill">Yönetici</span>
         <span class="spacer"></span>
         <a class="btn btn-ghost btn-sm" href="/" target="_blank" rel="noopener">Katılımcı ekranı ${icon('external-link', 14)}</a>
@@ -731,7 +731,7 @@
   }
 
   function eventRowHtml(ev) {
-    const title = ev.title || 'Canlı Oturum';
+    const title = ev.title || 'KODM Anket Sistemi';
     const phase = phaseLabel(ev.phase);
     return `<div class="event-row">
       <div class="event-row-head">
@@ -791,10 +791,10 @@
 
   function renderHome() {
     const events = S.events || [];
-    document.title = 'Canlı Oturum — Yönetici';
+    document.title = 'KODM Anket Sistemi — Yönetici';
     root.innerHTML = `
       <header class="topbar">
-        <a class="brand" href="/host"><span class="brand-mark">${icon('zap', 16)}</span><span class="brand-name">Canlı Oturum</span></a>
+        <a class="brand" href="/host"><span class="brand-mark">${icon('zap', 16)}</span><span class="brand-name">KODM Anket Sistemi</span></a>
         <span class="pill">Yönetici paneli</span>
         <span class="spacer"></span>
         <span class="pill user-pill" title="Giriş yapılan hesap">${esc(S.user?.username || '')}</span>
@@ -991,7 +991,7 @@
 
     root.innerHTML = `
       <header class="topbar">
-        <a class="brand" href="/host" title="Etkinlikler"><span class="brand-mark">${icon('zap', 16)}</span><span class="brand-name">Canlı Oturum</span></a>
+        <a class="brand" href="/host" title="Etkinlikler"><span class="brand-mark">${icon('zap', 16)}</span><span class="brand-name">KODM Anket Sistemi</span></a>
         <span class="sep"></span>
         <span class="event-name" title="${esc(st.title)}">${esc(st.title)}</span>
         <span class="event-code">${esc(st.code)}</span>
@@ -1043,7 +1043,7 @@
       </main>
 
       <footer class="host-foot">
-        Canlı Oturum · kendi sunucunda · <span data-live-participants>${st.participants.length}</span> katılımcı
+        KODM Anket Sistemi · kendi sunucunda · <span data-live-participants>${st.participants.length}</span> katılımcı
       </footer>`;
 
     updateLive();
@@ -1833,7 +1833,7 @@
 
   function participantPreviewHtml(q, index) {
     const total = S.editor?.questions.length || 1;
-    const title = S.state?.title || 'Canlı Oturum';
+    const title = S.state?.title || 'KODM Anket Sistemi';
     const multi = q.type === 'mc' && !!q.multi;
     const options = Array.isArray(q.options) ? q.options : [];
     let body = '';

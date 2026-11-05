@@ -67,7 +67,7 @@ test('uçtan uca canlı oturum akışı', async (t) => {
   // 3. Sayfa ve QR
   const page = await fetch(`${base}/j/${created.code}`);
   assert.equal(page.status, 200);
-  assert.match(await page.text(), /Canlı Oturum/);
+  assert.match(await page.text(), /KODM Anket Sistemi/);
 
   const qr = await fetch(`${base}/api/events/${created.code}/qr.png?size=320`);
   assert.equal(qr.status, 200);

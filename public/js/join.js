@@ -5,7 +5,6 @@
   const screenEl = document.getElementById('screen');
   const toastEl = document.getElementById('toast');
   const netEl = document.getElementById('net');
-  const footEl = document.getElementById('foot');
 
   const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
   const CLOUD_COLORS = ['#c7c0ff', '#8fb4ff', '#67e8f9', '#a7f3d0', '#fde68a', '#fca5a5', '#f0abfc', '#93c5fd'];
@@ -155,7 +154,7 @@
   // ---------------------------------------------------------------------------
 
   function eventHead() {
-    const title = S.snapshot?.title || S.event?.title || 'Canlı Oturum';
+    const title = S.snapshot?.title || S.event?.title || 'KODM Anket Sistemi';
     return `
       <div class="event-head">
         <div class="event-title" title="${esc(title)}">${esc(title)}</div>
@@ -222,9 +221,7 @@
     screenEl.innerHTML = `
       <section class="screen">
         <div class="hero">
-          <div class="logo-mark">${icon('zap', 28)}</div>
-          <h1>Canlı Oturum'a katıl</h1>
-          <p class="muted">Sunucunun paylaştığı 6 haneli kodu girerek başla.</p>
+          <h1>KODM Anket Sistemi'ne katıl</h1>
         </div>
 
         <form class="card stack" id="code-form" novalidate>
