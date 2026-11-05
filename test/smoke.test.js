@@ -423,6 +423,19 @@ test('hesap, çoktan seçmeli oylama, cevap kapatma ve kod değiştirme', async 
   assert.equal(locked.state.stats.selections, 2);
   assert.equal(locked.state.stats.options.find((option) => option.id === 'elma').count, 1);
 
+  const results = await fetch(`${base}/api/events/${created.code}/results`, {
+    headers: { Cookie: account.cookie },
+  });
+  assert.equal(results.status, 200);
+  const resultsData = await results.json();
+  assert.equal(resultsData.participants, 2);
+  assert.equal(resultsData.questions.length, 1);
+  assert.equal(resultsData.questions[0].stats.options.find((option) => option.id === 'elma').count, 1);
+  assert.deepEqual(
+    resultsData.questions[0].answers.map((answer) => answer.name).sort(),
+    ['Deniz'],
+  );
+
   // Cevapları kapat: yeni katılım ve cevap engellenir.
   const closed = await fetch(`${base}/api/events/${created.code}`, {
     method: 'PUT',

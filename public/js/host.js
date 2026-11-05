@@ -1164,6 +1164,7 @@
                 ▶ Oturumu başlat
               </button>
               <button class="btn btn-ghost" data-action="edit">Soruları düzenle</button>
+              <button class="btn btn-ghost" data-action="results" ${total === 0 ? 'disabled' : ''}>Sonuçları göster</button>
             </div>
             ${
               total === 0
@@ -1202,6 +1203,7 @@
         <button class="btn btn-ghost btn-sm" data-action="q-open" data-index="${Math.min(st.total - 1, st.current + 1)}" ${st.current >= st.total - 1 ? 'disabled' : ''}>Sonraki ${icon('arrow-right', 16)}</button>
         <span class="spacer"></span>
         <button class="btn btn-quiet btn-sm" data-action="resetAnswers">Cevapları sıfırla</button>
+        <button class="btn btn-ghost btn-sm" data-action="results">Sonuçları göster</button>
         <button class="btn btn-danger btn-sm" data-action="end">Oturumu kapat</button>
       </div>`;
     }
@@ -1242,6 +1244,80 @@
     const stats = st.stats;
     if (!q || !stats) {
       return `<div class="empty" style="padding:24px 0 14px"><div class="big">⏳</div>Cevaplar bekleniyor…</div>`;
+    }
+
+    function resultStatsHtml(question, stats, participantCount) {
+      if (!stats) return '<div class="empty">Henüz sonuç yok.</div>';
+      if (stats.kind === 'choice') {
+        const total = stats.total || 0;
+        const max = Math.max(1, ...stats.options.map((option) => option.count));
+        return `<div class="result-bars">
+          ${stats.options
+            .map((option) => {
+              const pct = total ? Math.round((option.count / total) * 100) : 0;
+              const correct = question.correctId && question.correctId === option.id;
+              return `<div class="res-row ${correct ? 'correct' : ''}">
+                <div class="res-top"><span class="txt">${esc(option.text)} ${correct ? '<span class="pill">doğru</span>' : ''}</span><span class="num">${option.count} kişi · %${pct}</span></div>
+                <div class="res-bar"><span class="res-fill" style="width:${total ? Math.max((option.count / max) * 100, option.count ? 3 : 0) : 0}%"></span></div>
+              </div>`;
+            })
+            .join('')}
+          <div class="kv"><span>${total} cevap</span><span>·</span><span>${participantCount ? Math.round((total / participantCount) * 100) : 0}% katılım</span></div>
+        </div>`;
+      }
+      if (stats.kind === 'rating') {
+        const total = stats.total || 0;
+        const max = Math.max(1, ...stats.distribution.map((item) => item.count));
+        return `<div class="result-bars">
+          <div class="avg"><b>${stats.avg}</b><span>/ 5 · ${total} cevap</span></div>
+          ${stats.distribution
+            .map((item) => `<div class="res-row"><div class="res-top"><span class="txt">${'★'.repeat(item.value)}${'☆'.repeat(5 - item.value)}</span><span class="num">${item.count} · %${total ? Math.round((item.count / total) * 100) : 0}</span></div><div class="res-bar"><span class="res-fill" style="width:${total ? Math.max((item.count / max) * 100, item.count ? 3 : 0) : 0}%"></span></div></div>`)
+            .join('')}
+        </div>`;
+      }
+      if (stats.kind === 'wordcloud') {
+        return `<div class="result-wordcloud">${(stats.words || [])
+          .map((word) => `<span title="${word.count} kişi">${esc(word.text)} <small>×${word.count}</small></span>`)
+          .join('') || '<span class="muted">Henüz kelime yok.</span>'}</div>`;
+      }
+      return `<div class="result-open-list">${(stats.items || [])
+        .map((item) => `<div class="open-item"><span>${esc(item.text)}</span><span class="count">×${item.count}</span></div>`)
+        .join('') || '<span class="muted">Henüz açık uçlu yanıt yok.</span>'}</div>`;
+    }
+
+    function resultAnswerLabel(question, value) {
+      if (Array.isArray(value)) {
+        return value.map((item) => question.options?.find((option) => option.id === item)?.text || item).join(', ');
+      }
+      if (question.options?.length) return question.options.find((option) => option.id === value)?.text || String(value ?? '');
+      if (question.type === 'rating') return `${value} / 5`;
+      return String(value ?? '');
+    }
+
+    function resultQuestionHtml(result, participantCount) {
+      const answers = result.answers || [];
+      return `<article class="result-question">
+        <div class="result-question-head">
+          <span class="pill phase">Soru ${result.index + 1}</span>
+          <span class="type-badge">${esc(TYPE_LABELS[result.type] || result.type)}</span>
+          <span class="spacer"></span><b>${answers.length} / ${participantCount} cevap</b>
+        </div>
+        <h4>${esc(result.prompt)}</h4>
+        ${resultStatsHtml(result, result.stats, participantCount)}
+        <div class="result-answers">
+          ${answers.length ? answers.map((answer) => `<div class="result-answer"><span class="avatar">${esc(initials(answer.name))}</span><b>${esc(answer.name)}</b><span>${esc(resultAnswerLabel(result, answer.value))}</span></div>`).join('') : '<span class="muted">Bu soruya henüz yanıt verilmedi.</span>'}
+        </div>
+      </article>`;
+    }
+
+    async function openResultsModal() {
+      openModal({ title: 'Tüm soru sonuçları', body: '<div class="empty"><div class="spinner"></div> Sonuçlar yükleniyor…</div>', wide: true });
+      try {
+        const data = await api(`/api/events/${encodeURIComponent(S.code)}/results`, { headers: hostHeaders() });
+        modalEl.querySelector('.modal-body').innerHTML = `<p class="hint results-summary">${data.participants} katılımcı · Her soru için dağılım ve kişi bazlı yanıtlar</p><div class="results-list">${data.questions.map((result) => resultQuestionHtml(result, data.participants)).join('')}</div>`;
+      } catch (error) {
+        modalEl.querySelector('.modal-body').innerHTML = `<div class="empty bad">${esc(error.message || 'Sonuçlar yüklenemedi.')}</div>`;
+      }
     }
 
     if (stats.kind === 'choice') {
@@ -2284,6 +2360,9 @@
 
       case 'participants':
         return openParticipantsModal();
+
+      case 'results':
+        return openResultsModal();
 
       case 'rename':
         return openRename();

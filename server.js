@@ -566,6 +566,27 @@ export function createServer(options = {}) {
     res.json(hostSnapshotFor(ev));
   });
 
+  app.get('/api/events/:code/results', (req, res) => {
+    const ev = store.get(normalizeCode(req.params.code));
+    if (!ev) return res.status(404).json({ error: 'Etkinlik bulunamadı.' });
+    if (!requireHost(req, res, ev)) return;
+    res.json({
+      code: ev.code,
+      title: ev.title,
+      participants: ev.participants.length,
+      questions: ev.questions.map((q, index) => ({
+        index,
+        id: q.id,
+        prompt: q.prompt,
+        type: q.type,
+        options: q.options,
+        correctId: q.correctId,
+        stats: M.computeStats(ev, q),
+        answers: M.answerDetails(ev, q),
+      })),
+    });
+  });
+
   app.put('/api/events/:code', (req, res) => {
     const ev = store.get(normalizeCode(req.params.code));
     if (!ev) return res.status(404).json({ error: 'Etkinlik bulunamadı.' });

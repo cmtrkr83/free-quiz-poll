@@ -279,6 +279,16 @@ function collectAnswers(ev, qid) {
   return out;
 }
 
+export function answerDetails(ev, q) {
+  if (!q) return [];
+  return collectAnswers(ev, q.id).map((answer) => ({
+    pid: answer.pid,
+    name: answer.name,
+    value: answer.value,
+    at: answer.at,
+  }));
+}
+
 export function computeStats(ev, q) {
   if (!q) return null;
   const items = collectAnswers(ev, q.id);
