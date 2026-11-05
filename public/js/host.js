@@ -803,9 +803,8 @@
       </header>
 
       <main class="home-wrap">
-        <div class="stack" style="gap:20px">
-          <div class="home-grid">
-            <form class="card stack" id="create-form">
+        <div class="home-sections">
+          <form class="card stack" id="create-form">
               <div>
                 <label class="label" for="title-input">Yeni etkinlik başlığı</label>
                 <input id="title-input" class="input" name="title" maxlength="100"
@@ -826,10 +825,9 @@
                 Etkinlik oluştur
               </button>
               <p class="hint center">Etkinlik hesabına kaydedilir; daha sonra tekrar açabilirsin.</p>
-            </form>
+          </form>
 
-            <div class="stack">
-              <div class="panel events-panel">
+          <div class="panel events-panel">
                 <div class="panel-head">
                   <span>Etkinliklerim</span>
                   <span class="spacer"></span>
@@ -844,17 +842,8 @@
                           Henüz etkinlik yok.<br /><span class="tiny">Oluşturduğun etkinlikler burada listelenir.</span>
                         </div>`
                   }
-                </div>
-              </div>
             </div>
-          </div>
-
-          <div class="feature-grid">
-            <div class="feature"><div class="ico">${icon('shield-check', 18)}</div><div><b>Kendi sunucunda</b><span>Veriler sende kalır; dışarıya hiçbir şey gönderilmez.</span></div></div>
-            <div class="feature"><div class="ico">${icon('smartphone', 18)}</div><div><b>Telefonla katılım</b><span>QR okut veya kodu gir. Uygulama gerekmez.</span></div></div>
-            <div class="feature"><div class="ico">${icon('chart-column', 18)}</div><div><b>Canlı sonuçlar</b><span>Her cevap anında grafiklere düşer.</span></div></div>
-            <div class="feature"><div class="ico">${icon('trophy', 18)}</div><div><b>Quiz & puan tablosu</b><span>Süreli sorular, doğru cevap ve sıralama.</span></div></div>
-            <div class="feature"><div class="ico">${icon('download', 18)}</div><div><b>CSV dışa aktarma</b><span>Tüm cevapları tek dosyada indir.</span></div></div>
+            </div>
           </div>
         </div>
       </main>`;

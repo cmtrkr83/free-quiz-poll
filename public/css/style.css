@@ -1294,6 +1294,14 @@ select.input option {
   gap: 16px;
   align-items: stretch;
 }
+
+.home-sections {
+  width: min(100%, 760px);
+  margin: 0 auto;
+  display: grid;
+  gap: 20px;
+}
+
 .home-grid > .stack {
   min-height: 0;
 }
