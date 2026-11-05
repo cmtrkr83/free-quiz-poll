@@ -106,6 +106,18 @@
     netEl.hidden = online;
   }
 
+  function updateTopIdentity() {
+    const identity = document.getElementById('player-identity');
+    if (!identity) return;
+    const visible = !!S.joined && !!S.me?.name;
+    identity.hidden = !visible;
+    if (!visible) return;
+    const avatar = identity.querySelector('[data-player-avatar]');
+    const name = identity.querySelector('[data-player-name]');
+    if (avatar) avatar.textContent = initials(S.me.name);
+    if (name) name.textContent = S.me.name;
+  }
+
   function codeFromLocation() {
     const match = location.pathname.match(/^\/(?:j|e|events)\/([A-Za-z0-9]+)/);
     if (match) return normalizeCode(match[1]);
@@ -245,6 +257,7 @@
 
         <p class="muted small center">Yönetici misiniz? <a href="/host">Etkinlik paneli</a></p>
       </section>`;
+    updateTopIdentity();
 
     const form = document.getElementById('code-form');
     const inputs = [...form.querySelectorAll('[data-code-index]')];
@@ -333,6 +346,7 @@
           <button class="btn btn-quiet btn-sm" id="change-code" type="button">${icon('arrow-left', 16)} Kodu değiştir</button>
         </div>
       </section>`;
+    updateTopIdentity();
 
     const form = document.getElementById('name-form');
     const input = document.getElementById('name-input');
@@ -354,6 +368,8 @@
     document.getElementById('change-code').addEventListener('click', () => {
       S.code = null;
       S.event = null;
+      S.me = null;
+      S.joined = false;
       S.error = '';
       history.replaceState(null, '', '/');
       renderCode();
@@ -915,6 +931,7 @@
       S.name = next.you.name || S.name;
       savePlayer();
     }
+    updateTopIdentity();
 
     if (next.title) S.event = { ...(S.event || {}), title: next.title, code: next.code };
 
