@@ -388,7 +388,8 @@ select.input option {
 
 .code-inputs {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(6, 56px);
+  justify-content: center;
   gap: 8px;
   width: 100%;
 }
@@ -1600,6 +1601,10 @@ select.input option {
   .pulse-core {
     width: 48px;
     height: 48px;
+  }
+
+  .code-inputs {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 }
 
