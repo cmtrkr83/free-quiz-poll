@@ -587,6 +587,15 @@ select.input option {
   width: 100%;
 }
 
+.screen:has(#code-form) {
+  gap: 10px;
+}
+
+#code-form {
+  width: min(100%, 430px);
+  align-self: center;
+}
+
 @keyframes rise {
   from {
     opacity: 0;
@@ -1567,6 +1576,10 @@ select.input option {
 
   .player .card.tight {
     padding: 12px;
+  }
+
+  #code-form {
+    width: 100%;
   }
 
   .hero {

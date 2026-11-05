@@ -456,6 +456,14 @@ test('hesap, çoktan seçmeli oylama, cevap kapatma ve kod değiştirme', async 
   assert.equal((await fetch(`${base}/api/events/${created.code}`)).status, 404);
   assert.equal((await fetch(`${base}/api/events/YENI42`)).status, 200);
 
+  const invalidCode = await fetch(`${base}/api/events/YENI42/code`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Cookie: account.cookie },
+    body: JSON.stringify({ code: 'ABC12' }),
+  });
+  assert.equal(invalidCode.status, 400);
+  assert.match((await invalidCode.json()).error, /tam 6 karakter/i);
+
   // Eski yönetici anahtarı yeni kodda da çalışır.
   const newHost = await connect(base);
   t.after(() => newHost.disconnect());

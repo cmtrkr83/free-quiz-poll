@@ -605,8 +605,8 @@ export function createServer(options = {}) {
 
     let next = normalizeCode(req.body?.code);
     if (!next) next = randomCode(6);
-    if (!/^[A-Z0-9]{4,12}$/.test(next)) {
-      return res.status(400).json({ error: 'Kod 4-12 karakter olmalı; harf ve rakam kullanın.' });
+    if (!/^[A-Z0-9]{6}$/.test(next)) {
+      return res.status(400).json({ error: 'Kod tam 6 karakter olmalı; harf ve rakam kullanın.' });
     }
     if (next === ev.code) {
       return res.status(400).json({ error: 'Yeni kod mevcut kodla aynı.' });

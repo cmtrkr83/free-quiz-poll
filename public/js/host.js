@@ -901,9 +901,10 @@
           <p class="muted small" style="margin:0"><b>${esc(title || code)}</b> için yeni kod belirle. Eski bağlantılar çalışmayı durdurur.</p>
           <div>
             <label class="label" for="new-code-input">Yeni kod</label>
-            <input id="new-code-input" class="input" maxlength="12" autocomplete="off"
-              style="text-transform:uppercase;letter-spacing:.06em;font-weight:600" placeholder="Yeni kod (4-12)" />
-            <p class="hint" style="margin-top:6px">Boş bırakırsan rastgele yeni bir kod üretilir.</p>
+            <input id="new-code-input" class="input" maxlength="6" minlength="6" autocomplete="off"
+              inputmode="text" autocapitalize="characters" spellcheck="false"
+              style="text-transform:uppercase;letter-spacing:.06em;font-weight:600" placeholder="ABC123" />
+            <p class="hint" style="margin-top:6px">6 karakter gir veya boş bırakarak rastgele yeni bir kod üret.</p>
           </div>
           <p class="err" id="new-code-err"></p>
         </div>`,

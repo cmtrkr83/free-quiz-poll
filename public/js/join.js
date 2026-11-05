@@ -220,10 +220,6 @@
     const error = S.error || '';
     screenEl.innerHTML = `
       <section class="screen">
-        <div class="hero">
-          <h1>KODM Anket Sistemi'ne katıl</h1>
-        </div>
-
         <form class="card stack" id="code-form" novalidate>
           <div>
             <div class="label" id="code-label">Oturum kodu</div>
