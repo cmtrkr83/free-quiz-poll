@@ -596,6 +596,11 @@ select.input option {
   align-self: center;
 }
 
+#screen:has(#code-form) .feature-grid {
+  width: min(100%, 430px);
+  align-self: center;
+}
+
 @keyframes rise {
   from {
     opacity: 0;
@@ -1579,6 +1584,10 @@ select.input option {
   }
 
   #code-form {
+    width: 100%;
+  }
+
+  #screen:has(#code-form) .feature-grid {
     width: 100%;
   }
 
