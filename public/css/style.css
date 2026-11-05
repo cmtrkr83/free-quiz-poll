@@ -2020,6 +2020,7 @@ select.input option {
   }
 }
 .modal-card {
+  position: relative;
   width: min(880px, 100%);
   max-height: 88dvh;
   display: flex;
@@ -2030,6 +2031,50 @@ select.input option {
   box-shadow: var(--shadow);
   overflow: hidden;
   animation: rise 0.3s var(--ease) both;
+}
+
+.editor-add-wrap {
+  position: absolute;
+  right: 24px;
+  bottom: 76px;
+  z-index: 4;
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+}
+
+.editor-add-fab {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent-fill);
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.editor-add-fab:hover {
+  filter: brightness(1.08);
+}
+
+.editor-add-menu {
+  display: grid;
+  gap: 6px;
+  min-width: 170px;
+  padding: 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  background: var(--panel-solid);
+  box-shadow: var(--shadow);
+}
+
+.editor-add-menu[hidden] {
+  display: none;
 }
 .modal-card.wide {
   width: min(1080px, 100%);
@@ -2078,6 +2123,11 @@ select.input option {
   }
   .modal-foot {
     padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  .editor-add-wrap {
+    right: 16px;
+    bottom: 84px;
   }
 }
 

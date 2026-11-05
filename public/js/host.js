@@ -1700,14 +1700,6 @@
                   Henüz soru yok. Aşağıdan bir soru türü ekle.
                 </div>`
           }
-          <div class="row wrap" style="gap:6px;padding-top:4px">
-            ${Object.entries(SHORT_TYPES)
-              .map(
-                ([type, label]) =>
-                  `<button class="btn btn-ghost btn-sm" type="button" data-act="add" data-type="${type}">＋ ${esc(label)}</button>`,
-              )
-              .join('')}
-          </div>
         </div>`,
       footer: `
         <span class="hint" id="editor-status">${S.editor.dirty ? '<span class="warn">Kaydedilmemiş değişiklikler var</span>' : 'Tüm değişiklikler kayıtlı'}</span>
@@ -1731,6 +1723,24 @@
         document.getElementById('editor-save').addEventListener('click', saveEditor);
       },
     });
+
+    const editorCard = modalEl.querySelector('.modal-card');
+    if (editorCard && !editorCard.querySelector('.editor-add-fab')) {
+      editorCard.insertAdjacentHTML(
+        'beforeend',
+        `<div class="editor-add-wrap">
+          <div class="editor-add-menu" data-editor-add-menu hidden>
+            ${Object.entries(SHORT_TYPES)
+              .map(
+                ([type, label]) =>
+                  `<button class="btn btn-ghost btn-sm" type="button" data-act="add" data-type="${type}">${esc(label)}</button>`,
+              )
+              .join('')}
+          </div>
+          <button class="editor-add-fab" type="button" data-act="add-menu" aria-label="Yeni soru ekle" title="Yeni soru ekle">＋</button>
+        </div>`,
+      );
+    }
 
     // Scroll'u yeniden uygula (openModal odaklaması sonrası)
     requestAnimationFrame(() => {
@@ -2050,6 +2060,11 @@
       list.push(question);
       markDirty();
       renderEditor(list.length - 1, true);
+      return;
+    }
+    if (action === 'add-menu') {
+      const menu = modalEl.querySelector('[data-editor-add-menu]');
+      if (menu) menu.hidden = !menu.hidden;
       return;
     }
     if (!q) return;
