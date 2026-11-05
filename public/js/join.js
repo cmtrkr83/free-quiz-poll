@@ -226,10 +226,16 @@
 
         <form class="card stack" id="code-form" novalidate>
           <div>
-            <label class="label" for="code-input">Oturum kodu</label>
-            <input id="code-input" class="input code-input" name="code" inputmode="text" autocomplete="off"
-              autocapitalize="characters" spellcheck="false" maxlength="6" placeholder="ABC123"
-              value="${esc(S.code || '')}" aria-describedby="code-err" />
+            <div class="label" id="code-label">Oturum kodu</div>
+            <div class="code-inputs" role="group" aria-labelledby="code-label" aria-describedby="code-err">
+              ${Array.from({ length: 6 }, (_, index) => {
+                const value = S.code?.[index] || '';
+                return `<input class="input code-input" data-code-index="${index}" inputmode="text"
+                  autocomplete="${index === 0 ? 'one-time-code' : 'off'}" autocapitalize="characters"
+                  spellcheck="false" maxlength="1" aria-label="Kod ${index + 1}. karakteri"
+                  value="${esc(value)}" />`;
+              }).join('')}
+            </div>
           </div>
           <p class="err" id="code-err">${esc(error)}</p>
           <button class="btn btn-primary btn-lg" type="submit">Devam et</button>
@@ -245,22 +251,60 @@
       </section>`;
 
     const form = document.getElementById('code-form');
-    const input = document.getElementById('code-input');
+    const inputs = [...form.querySelectorAll('[data-code-index]')];
+    const codeValue = () => inputs.map((input) => normalizeCode(input.value)).join('');
+
+    function focusInput(index) {
+      inputs[Math.max(0, Math.min(index, inputs.length - 1))]?.focus();
+    }
+
     form.addEventListener('submit', (event) => {
       event.preventDefault();
-      const code = normalizeCode(input.value);
+      const code = codeValue();
       if (code.length !== 6) {
         document.getElementById('code-err').textContent = 'Kod 6 karakter olmalı.';
-        input.focus();
+        focusInput(code.length);
         return;
       }
       S.code = code;
       S.error = '';
       loadEvent(code);
     });
-    input.addEventListener('input', () => {
-      input.value = normalizeCode(input.value);
+
+    inputs.forEach((input, index) => {
+      input.addEventListener('input', () => {
+        const value = normalizeCode(input.value);
+        input.value = value.slice(-1);
+        if (input.value && index < inputs.length - 1) focusInput(index + 1);
+        if (codeValue().length === inputs.length) form.requestSubmit();
+      });
+
+      input.addEventListener('keydown', (event) => {
+        if (event.key === 'Backspace' && !input.value && index > 0) {
+          inputs[index - 1].value = '';
+          focusInput(index - 1);
+        } else if (event.key === 'ArrowLeft' && index > 0) {
+          event.preventDefault();
+          focusInput(index - 1);
+        } else if (event.key === 'ArrowRight' && index < inputs.length - 1) {
+          event.preventDefault();
+          focusInput(index + 1);
+        }
+      });
+
+      input.addEventListener('paste', (event) => {
+        event.preventDefault();
+        const pasted = normalizeCode(event.clipboardData?.getData('text') || '').slice(0, inputs.length - index);
+        [...pasted].forEach((character, offset) => {
+          inputs[index + offset].value = character;
+        });
+        const nextIndex = index + pasted.length;
+        if (nextIndex >= inputs.length) form.requestSubmit();
+        else focusInput(nextIndex);
+      });
     });
+
+    focusInput(codeValue().length);
   }
 
   function renderName() {
