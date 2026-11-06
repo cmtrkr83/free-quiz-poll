@@ -14,7 +14,7 @@ COPY server.js ./
 COPY src ./src
 COPY public ./public
 
-RUN mkdir -p /data && chown -R node:node /app /data
+RUN mkdir -p /data && chown node:node /data
 
 USER node
 
