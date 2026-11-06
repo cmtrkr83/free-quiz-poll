@@ -804,8 +804,13 @@
 
       <main class="home-wrap">
         <div class="home-sections">
-          <form class="card stack" id="create-form">
-              <div>
+          <form class="card stack host-create-card" id="create-form">
+              <div class="host-section-heading">
+                <span class="pill phase">Yeni oturum</span>
+                <h1 class="screen-title">Yeni bir anket başlat</h1>
+                <p class="hint">Sorularını oluştur, katılımcılarını davet et ve yanıtları canlı takip et.</p>
+              </div>
+              <div class="host-field">
                 <label class="label" for="title-input">Yeni etkinlik başlığı</label>
                 <input id="title-input" class="input" name="title" maxlength="100"
                   placeholder="Örn. 8-A Fen Bilimleri Tekrar" autocomplete="off" />
@@ -827,9 +832,12 @@
               <p class="hint center">Etkinlik hesabına kaydedilir; daha sonra tekrar açabilirsin.</p>
           </form>
 
-          <div class="panel events-panel">
+          <div class="panel events-panel host-events-card">
                 <div class="panel-head">
-                  <span>Etkinliklerim</span>
+                  <div>
+                    <span class="panel-kicker">Arşiv</span>
+                    <strong>Etkinliklerim</strong>
+                  </div>
                   <span class="spacer"></span>
                   <span class="tiny muted">${events.length}</span>
                 </div>
@@ -1393,10 +1401,23 @@
     });
     try {
       const data = await api(`/api/events/${encodeURIComponent(S.code)}/results`, { headers: hostHeaders() });
+      const totalAnswers = data.questions.reduce((sum, question) => sum + (question.stats?.total || 0), 0);
+      const answeredQuestions = data.questions.filter((question) => (question.stats?.total || 0) > 0).length;
       const questions = data.questions
         .map((question) => {
           const stats = question.stats;
           const answers = question.answers || [];
+          const answerLabel = (value) => {
+            if (Array.isArray(value)) {
+              return value
+                .map((item) => question.options?.find((option) => option.id === item)?.text || item)
+                .join(', ');
+            }
+            if (question.options?.length) {
+              return question.options.find((option) => option.id === value)?.text || String(value ?? '');
+            }
+            return question.type === 'rating' ? `${value} / 5` : String(value ?? '');
+          };
           const bars =
             stats?.kind === 'choice'
               ? stats.options
@@ -1411,15 +1432,26 @@
                     .map((item) => `<div class="res-row"><div class="res-top"><span class="txt">${'★'.repeat(item.value)}${'☆'.repeat(5 - item.value)}</span><span class="num">${item.count} · %${stats.total ? Math.round((item.count / stats.total) * 100) : 0}</span></div></div>`)
                     .join('')
                 : `<div class="muted">Yanıt özeti: ${stats?.total || 0} cevap</div>`;
-          return `<article class="result-question">
+          return `<article class="result-question result-surface">
             <div class="result-question-head"><span class="pill phase">Soru ${question.index + 1}</span><span class="type-badge">${esc(TYPE_LABELS[question.type] || question.type)}</span><span class="spacer"></span><b>${answers.length} / ${data.participants} cevap</b></div>
             <h4>${esc(question.prompt)}</h4>
             <div class="result-bars">${bars}</div>
-            <div class="result-answers">${answers.length ? answers.map((answer) => `<div class="result-answer"><span class="avatar">${esc(initials(answer.name))}</span><b>${esc(answer.name)}</b><span>${esc(Array.isArray(answer.value) ? answer.value.join(', ') : answer.value)}</span></div>`).join('') : '<span class="muted">Bu soruya henüz yanıt verilmedi.</span>'}</div>
+            <div class="result-answers">${answers.length ? answers.map((answer) => `<div class="result-answer"><span class="avatar">${esc(initials(answer.name))}</span><b>${esc(answer.name)}</b><span>${esc(answerLabel(answer.value))}</span></div>`).join('') : '<span class="muted">Bu soruya henüz yanıt verilmedi.</span>'}</div>
           </article>`;
         })
         .join('');
-      modalEl.querySelector('.modal-body').innerHTML = `<p class="hint results-summary">${data.participants} katılımcı · Her soru için dağılım ve kişi bazlı yanıtlar</p><div class="results-list">${questions}</div>`;
+      modalEl.querySelector('.modal-body').innerHTML = `
+        <div class="results-intro">
+          <span class="pill live"><span class="dot"></span>Canlı sonuçlar</span>
+          <h2 class="results-title">Soruları tek tek incele</h2>
+          <p class="hint">Katılımcılar kendi hızlarında ilerler; yanıtlar geldikçe bu görünüm güncellenir.</p>
+        </div>
+        <div class="big-stats results-overview">
+          <div class="big-stat accent"><b>${data.participants}</b><span>katılımcı</span></div>
+          <div class="big-stat"><b>${totalAnswers}</b><span>toplam yanıt</span></div>
+          <div class="big-stat"><b>${answeredQuestions} / ${data.questions.length}</b><span>yanıtlanan soru</span></div>
+        </div>
+        <div class="results-list">${questions}</div>`;
     } catch (error) {
       modalEl.querySelector('.modal-body').innerHTML = `<div class="empty bad">${esc(error.message || 'Sonuçlar yüklenemedi.')}</div>`;
     }
