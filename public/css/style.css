@@ -390,10 +390,8 @@ select.input option {
 .code-inputs {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  justify-content: center;
   gap: 8px;
-  width: calc(100% + 40px);
-  margin-inline: -20px;
+  width: 100%;
 }
 
 .code-input::placeholder {
@@ -621,6 +619,11 @@ select.input option {
 }
 
 #screen:has(#code-form) .feature-grid {
+  width: min(100%, 430px);
+  align-self: center;
+}
+
+.player:has(#code-form) .p-top {
   width: min(100%, 430px);
   align-self: center;
 }
