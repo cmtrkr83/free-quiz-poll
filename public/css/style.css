@@ -376,7 +376,8 @@ select.input option {
 .code-input {
   min-width: 0;
   width: 100%;
-  height: 56px;
+  height: auto;
+  aspect-ratio: 1 / 1;
   text-align: center;
   font-family: var(--mono);
   font-size: clamp(24px, 8vw, 34px);
@@ -388,10 +389,11 @@ select.input option {
 
 .code-inputs {
   display: grid;
-  grid-template-columns: repeat(6, 56px);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   justify-content: center;
   gap: 8px;
-  width: 100%;
+  width: calc(100% + 40px);
+  margin-inline: -20px;
 }
 
 .code-input::placeholder {
@@ -1662,6 +1664,8 @@ select.input option {
 
   .code-inputs {
     grid-template-columns: repeat(6, minmax(0, 1fr));
+    width: calc(100% + 28px);
+    margin-inline: -14px;
   }
 }
 

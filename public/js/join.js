@@ -250,9 +250,8 @@
         </form>
 
         <div class="feature-grid">
-          <div class="feature"><div class="ico">${icon('smartphone', 18)}</div><div><b>Telefonla katıl</b><span>Uygulama indirmeye gerek yok.</span></div></div>
+          <div class="feature"><div class="ico">${icon('smartphone', 18)}</div><div><b>Telefonla katıl</b><span>Kod ve ad yeterli, kayıt yok.</span></div></div>
           <div class="feature"><div class="ico">${icon('zap', 18)}</div><div><b>Anında sonuç</b><span>Cevaplar canlı olarak ekranda.</span></div></div>
-          <div class="feature"><div class="ico">${icon('lock', 18)}</div><div><b>Kod ve ad yeterli</b><span>Kayıt yok, uygulama yok.</span></div></div>
         </div>
 
         <p class="muted small center">Yönetici misiniz? <a href="/host">Etkinlik paneli</a></p>

@@ -298,7 +298,7 @@
     const title = S.meta?.title ? esc(S.meta.title) : 'Yönetici girişi';
     root.innerHTML = `
       <header class="topbar">
-        <a class="brand" href="/host"><span class="brand-mark">${icon('zap', 16)}</span><span class="brand-name">KODM Anket Sistemi</span></a>
+        <a class="brand" href="/host"><span class="brand-mark">${icon('chart-column', 16)}</span><span class="brand-name">KODM Anket Sistemi</span></a>
         <span class="sep"></span>
         <span class="pill">${esc(S.code || '')}</span>
         <span class="spacer"></span>
@@ -549,7 +549,7 @@
     const title = mode === 'register' ? 'Yönetici hesabı oluştur' : 'Yönetici girişi';
     root.innerHTML = `
       <header class="topbar">
-        <a class="brand" href="/host"><span class="brand-mark">${icon('zap', 16)}</span><span class="brand-name">KODM Anket Sistemi</span></a>
+        <a class="brand" href="/host"><span class="brand-mark">${icon('chart-column', 16)}</span><span class="brand-name">KODM Anket Sistemi</span></a>
         <span class="pill">Yönetici</span>
         <span class="spacer"></span>
         <a class="btn btn-ghost btn-sm" href="/" target="_blank" rel="noopener">Katılımcı ekranı ${icon('external-link', 14)}</a>
@@ -794,7 +794,7 @@
     document.title = 'KODM Anket Sistemi — Yönetici';
     root.innerHTML = `
       <header class="topbar">
-        <a class="brand" href="/host"><span class="brand-mark">${icon('zap', 16)}</span><span class="brand-name">KODM Anket Sistemi</span></a>
+        <a class="brand" href="/host"><span class="brand-mark">${icon('chart-column', 16)}</span><span class="brand-name">KODM Anket Sistemi</span></a>
         <span class="pill">Yönetici paneli</span>
         <span class="spacer"></span>
         <span class="pill user-pill" title="Giriş yapılan hesap">${esc(S.user?.username || '')}</span>
@@ -981,7 +981,7 @@
 
     root.innerHTML = `
       <header class="topbar">
-        <a class="brand" href="/host" title="Etkinlikler"><span class="brand-mark">${icon('zap', 16)}</span><span class="brand-name">KODM Anket Sistemi</span></a>
+        <a class="brand" href="/host" title="Etkinlikler"><span class="brand-mark">${icon('chart-column', 16)}</span><span class="brand-name">KODM Anket Sistemi</span></a>
         <span class="sep"></span>
         <span class="event-name" title="${esc(st.title)}">${esc(st.title)}</span>
         <span class="event-code">${esc(st.code)}</span>
