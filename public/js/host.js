@@ -1385,6 +1385,46 @@
     </div>`;
   }
 
+  async function showResultsModal() {
+    openModal({
+      title: 'Tüm soru sonuçları',
+      body: '<div class="empty"><div class="spinner"></div> Sonuçlar yükleniyor…</div>',
+      wide: true,
+    });
+    try {
+      const data = await api(`/api/events/${encodeURIComponent(S.code)}/results`, { headers: hostHeaders() });
+      const questions = data.questions
+        .map((question) => {
+          const stats = question.stats;
+          const answers = question.answers || [];
+          const bars =
+            stats?.kind === 'choice'
+              ? stats.options
+                  .map((option) => {
+                    const pct = stats.total ? Math.round((option.count / stats.total) * 100) : 0;
+                    const width = stats.total ? Math.max((option.count / Math.max(1, ...stats.options.map((item) => item.count))) * 100, option.count ? 3 : 0) : 0;
+                    return `<div class="res-row"><div class="res-top"><span class="txt">${esc(option.text)}</span><span class="num">${option.count} kişi · %${pct}</span></div><div class="res-bar"><span class="res-fill" style="width:${width}%"></span></div></div>`;
+                  })
+                  .join('')
+              : stats?.kind === 'rating'
+                ? stats.distribution
+                    .map((item) => `<div class="res-row"><div class="res-top"><span class="txt">${'★'.repeat(item.value)}${'☆'.repeat(5 - item.value)}</span><span class="num">${item.count} · %${stats.total ? Math.round((item.count / stats.total) * 100) : 0}</span></div></div>`)
+                    .join('')
+                : `<div class="muted">Yanıt özeti: ${stats?.total || 0} cevap</div>`;
+          return `<article class="result-question">
+            <div class="result-question-head"><span class="pill phase">Soru ${question.index + 1}</span><span class="type-badge">${esc(TYPE_LABELS[question.type] || question.type)}</span><span class="spacer"></span><b>${answers.length} / ${data.participants} cevap</b></div>
+            <h4>${esc(question.prompt)}</h4>
+            <div class="result-bars">${bars}</div>
+            <div class="result-answers">${answers.length ? answers.map((answer) => `<div class="result-answer"><span class="avatar">${esc(initials(answer.name))}</span><b>${esc(answer.name)}</b><span>${esc(Array.isArray(answer.value) ? answer.value.join(', ') : answer.value)}</span></div>`).join('') : '<span class="muted">Bu soruya henüz yanıt verilmedi.</span>'}</div>
+          </article>`;
+        })
+        .join('');
+      modalEl.querySelector('.modal-body').innerHTML = `<p class="hint results-summary">${data.participants} katılımcı · Her soru için dağılım ve kişi bazlı yanıtlar</p><div class="results-list">${questions}</div>`;
+    } catch (error) {
+      modalEl.querySelector('.modal-body').innerHTML = `<div class="empty bad">${esc(error.message || 'Sonuçlar yüklenemedi.')}</div>`;
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Canlı güncellemeler
   // ---------------------------------------------------------------------------
@@ -2366,7 +2406,7 @@
         return openParticipantsModal();
 
       case 'results':
-        return openResultsModal();
+        return showResultsModal();
 
       case 'rename':
         return openRename();
