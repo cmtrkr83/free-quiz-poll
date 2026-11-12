@@ -2192,6 +2192,11 @@ select.input option {
 .modal-card.narrow {
   width: min(520px, 100%);
 }
+/* Editör boşken kart içeriğe göre kısalıyor ve “+” menüsü kırpılıyordu;
+   sabit bir başlangıç yüksekliği menünün karta sığmasını sağlar. */
+.modal-card.editor-modal {
+  min-height: min(560px, 88dvh);
+}
 .modal-head {
   display: flex;
   align-items: center;

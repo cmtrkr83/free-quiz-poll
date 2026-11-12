@@ -218,9 +218,9 @@
   // Modal altyapısı
   // ---------------------------------------------------------------------------
 
-  function openModal({ title, body, footer = '', wide = false, narrow = false, onMount = null }) {
+  function openModal({ title, body, footer = '', wide = false, narrow = false, className = '', onMount = null }) {
     modalEl.innerHTML = `
-      <div class="modal-card ${wide ? 'wide' : ''} ${narrow ? 'narrow' : ''}" role="dialog" aria-modal="true" aria-label="${esc(title)}">
+      <div class="modal-card ${wide ? 'wide' : ''} ${narrow ? 'narrow' : ''} ${className}" role="dialog" aria-modal="true" aria-label="${esc(title)}">
         <div class="modal-head">
           <h3>${esc(title)}</h3>
           <span class="spacer"></span>
@@ -1798,6 +1798,7 @@
     openModal({
       title: `Sorular · ${list.length}`,
       wide: true,
+      className: 'editor-modal',
       body: `
         <div class="stack" style="gap:12px">
           <p class="hint">Değişiklikler <b>Kaydet</b> ile yayınlanır. Oturum başladıktan sonra sorular kilitlenir.</p>
