@@ -814,7 +814,7 @@
 
   function renderHome() {
     const events = S.events || [];
-    document.title = 'KODM Anket Sistemi — Yönetici';
+    document.title = 'Anket 41 — Yönetici';
     root.innerHTML = `
       <header class="topbar">
         <a class="brand" href="/host"><span class="brand-mark">${icon('chart-column', 16)}</span><span class="brand-name">KODM Anket Sistemi</span></a>
