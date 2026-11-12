@@ -401,7 +401,7 @@ function currentQuestion(ev) {
   return ev.questions[ev.current] || null;
 }
 
-export function hostSnapshot(ev, { online = 0, onlineIds = null, publicUrl = null } = {}) {
+export function hostSnapshot(ev, { online = 0, onlineIds = null, publicUrl = null, aliasUrl = null } = {}) {
   const q = currentQuestion(ev);
   const start = q ? ev.startedAt?.[q.id] || 0 : 0;
   return {
@@ -445,6 +445,7 @@ export function hostSnapshot(ev, { online = 0, onlineIds = null, publicUrl = nul
     deadline: q && q.timeLimit > 0 && start ? start + q.timeLimit * 1000 : null,
     online,
     publicUrl,
+    aliasUrl,
   };
 }
 

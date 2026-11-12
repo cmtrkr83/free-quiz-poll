@@ -170,6 +170,29 @@
     return `${base}/j/${S.code}`;
   }
 
+  /** PUBLIC_ALIAS_URL: kısa/alternatif adres. Tanımlıysa uzun link yerine bu gösterilir. */
+  function aliasUrl() {
+    return String(S.state?.aliasUrl || S.meta?.aliasUrl || '').trim();
+  }
+
+  /** Kullanıcıya gösterilecek katılım adresi: kısa adres varsa o, yoksa doğrudan katılım linki. */
+  function joinDisplayUrl() {
+    return aliasUrl() || joinUrl();
+  }
+
+  /** QR'ın altında gösterilen alternatif/kısa adres (PUBLIC_ALIAS_URL). */
+  function qrAliasHtml(url = aliasUrl()) {
+    const value = String(url || '').trim();
+    if (!value) return '';
+    return `<div class="qr-alias">
+      <div class="qr-alias-head">
+        <span class="qr-alias-label">Kısa adres</span>
+        <button type="button" class="icon-btn qr-alias-copy" data-action="copy" data-copy="${esc(value)}" title="Adresi kopyala" aria-label="Adresi kopyala">${icon('copy', 13)}</button>
+      </div>
+      <a class="qr-alias-url" href="${esc(value)}" target="_blank" rel="noopener">${esc(value)}</a>
+    </div>`;
+  }
+
   function fmtDate(ts) {
     try {
       return new Date(ts).toLocaleString('tr-TR', {
@@ -1023,8 +1046,8 @@
                 </button>
               </div>
               <div class="join-link">
-                <code style="font-size:12px">${esc(joinUrl())}</code>
-                <button class="icon-btn" style="width:34px;height:34px" data-action="copy" data-copy="${esc(joinUrl())}" title="Bağlantıyı kopyala">${icon('copy', 16)}</button>
+                <code style="font-size:12px">${esc(joinDisplayUrl())}</code>
+                <button class="icon-btn" style="width:34px;height:34px" data-action="copy" data-copy="${esc(joinDisplayUrl())}" title="Bağlantıyı kopyala">${icon('copy', 16)}</button>
               </div>
               <div class="actions" style="margin-top:2px">
                 ${
@@ -1135,22 +1158,30 @@
 
   function lobbyStage(st) {
     const total = st.total || 0;
+    const alias = String(st.aliasUrl || '').trim();
     const url = joinUrl();
+    // Kısa adres tanımlıysa uzun bağlantı satırı gösterilmez; adres QR'ın altındaki kutudadır.
+    const joinLink = alias
+      ? ''
+      : `<div class="join-link">
+              <code>${esc(url)}</code>
+              <button class="icon-btn" style="width:38px;height:38px" data-action="copy" data-copy="${esc(url)}" title="Bağlantıyı kopyala">${icon('copy', 16)}</button>
+            </div>`;
     return `
       <div class="card">
         <div class="join-grid">
-          <div class="qr-box">
-            <img src="/api/events/${encodeURIComponent(st.code)}/qr.png?size=720" alt="Katılım QR kodu" width="232" height="232" />
+          <div class="qr-wrap">
+            <div class="qr-box">
+              <img src="/api/events/${encodeURIComponent(st.code)}/qr.png?size=720" alt="Katılım QR kodu" width="232" height="232" />
+            </div>
+            ${qrAliasHtml(alias)}
           </div>
           <div class="join-info stack" style="gap:12px">
             <div>
               <div class="q-index">Katılım kodu</div>
               <div class="code-big" style="margin-top:4px">${esc(st.code)}</div>
             </div>
-            <div class="join-link">
-              <code>${esc(url)}</code>
-              <button class="icon-btn" style="width:38px;height:38px" data-action="copy" data-copy="${esc(url)}" title="Bağlantıyı kopyala">${icon('copy', 16)}</button>
-            </div>
+            ${joinLink}
             <div class="row wrap">
               <span class="pill live"><span class="dot"></span><span data-live-participants>${st.participants.length}</span> katılımcı</span>
               <span class="pill">${total} soru</span>
@@ -1166,7 +1197,7 @@
             ${
               total === 0
                 ? '<p class="warn small">Başlamak için en az bir soru ekle.</p>'
-                : '<p class="hint">Telefon kamerasıyla QR kodu okutun veya adresi açıp kodu girin.</p>'
+                : `<p class="hint">Telefon kamerasıyla QR kodu okutun veya ${alias ? 'kısa adresi açıp' : 'adresi açıp'} kodu girin.</p>`
             }
           </div>
         </div>
@@ -1561,7 +1592,15 @@
   }
 
   function openQr() {
-    const url = joinUrl();
+    const alias = aliasUrl();
+    const url = joinDisplayUrl();
+    // Kısa adres varsa uzun bağlantı satırı gösterilmez (adres zaten QR'ın altında ve kopyalanabilir).
+    const joinLink = alias
+      ? ''
+      : `<div class="join-link" style="width:100%">
+            <code style="flex:1">${esc(url)}</code>
+            <button class="btn btn-ghost btn-sm" type="button" data-action="copy" data-copy="${esc(url)}">Kopyala</button>
+          </div>`;
     openModal({
       title: 'Katılım bağlantısı',
       narrow: true,
@@ -1570,12 +1609,10 @@
           <div class="qr-box" style="width:min(320px, 78vw)">
             <img src="/api/events/${encodeURIComponent(S.code)}/qr.png?size=720" alt="Katılım QR kodu" />
           </div>
+          ${qrAliasHtml(alias)}
           <div class="code-big" style="font-size:clamp(32px,7vw,46px)">${esc(S.code)}</div>
-          <div class="join-link" style="width:100%">
-            <code style="flex:1">${esc(url)}</code>
-            <button class="btn btn-ghost btn-sm" type="button" data-action="copy" data-copy="${esc(url)}">Kopyala</button>
-          </div>
-          <p class="hint center">Telefon kamerasıyla QR kodu okutabilir veya adrese girip kodu yazabilirler.</p>
+          ${joinLink}
+          <p class="hint center">Telefon kamerasıyla QR kodu okutabilir veya ${alias ? 'kısa adrese girip' : 'adrese girip'} kodu yazabilirler.</p>
         </div>`,
       footer: `<span class="spacer"></span>
         <a class="btn btn-primary" href="${esc(url)}" target="_blank" rel="noopener">Katılımcı ekranını aç ${icon('external-link', 14)}</a>`,

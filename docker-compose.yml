@@ -11,6 +11,7 @@ services:
       HOST: 0.0.0.0
       DATA_DIR: /data
       PUBLIC_URL: https://poll41.share.zrok.io
+      PUBLIC_ALIAS_URL: ${PUBLIC_ALIAS_URL:-}
       ADMIN_KEY: ${ADMIN_KEY:-}
       EVENT_TTL_DAYS: ${EVENT_TTL_DAYS:-14}
       MAX_EVENTS: ${MAX_EVENTS:-500}

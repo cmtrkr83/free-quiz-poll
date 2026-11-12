@@ -263,6 +263,7 @@ node --env-file-if-exists=.env server.js
 | `HOST` | `0.0.0.0` | Dinlenecek arayüz. Yalnızca yerel için `127.0.0.1` |
 | `DATA_DIR` | `./data` | `db.json` dosyasının tutulacağı klasör |
 | `PUBLIC_URL` | boş | QR ve bağlantılarda kullanılacak dış adres, ör. `https://oturum.ornek.com`. Boşsa isteğin host'u kullanılır |
+| `PUBLIC_ALIAS_URL` | boş | Yönetici panelinde QR kodun altında gösterilecek alternatif/kısa adres |
 | `ADMIN_KEY` | boş | Doluysa yeni yönetici hesabı açmak için bu anahtar gerekir. Boşsa kayıt açıktır (IP başına saatte 5 deneme) |
 | `EVENT_TTL_DAYS` | `14` | Bu günden eski etkinlikler otomatik silinir (6 saatte bir kontrol) |
 | `MAX_EVENTS` | `500` | Saklanabilecek en fazla etkinlik |

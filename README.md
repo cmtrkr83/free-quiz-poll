@@ -146,6 +146,7 @@ and Docker Compose reads the same file.
 | `HOST` | `0.0.0.0` | Bind address; use `127.0.0.1` for local-only |
 | `DATA_DIR` | `./data` | Folder that contains `db.json` |
 | `PUBLIC_URL` | empty | Public origin used in QR codes and links, e.g. `https://quiz.example.com`. Empty = request host |
+| `PUBLIC_ALIAS_URL` | empty | Optional alternate/short address shown below the QR code in the host panel |
 | `ADMIN_KEY` | empty | If set, this key is required to register a new host account |
 | `EVENT_TTL_DAYS` | `14` | Events older than this are deleted automatically (checked every 6 hours) |
 | `MAX_EVENTS` | `500` | Maximum number of stored events |

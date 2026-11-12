@@ -1517,6 +1517,73 @@ select.input option {
   background: var(--panel-2);
 }
 
+.qr-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 232px;
+  max-width: 100%;
+}
+
+.qr-alias {
+  width: 100%;
+  max-width: 320px;
+  container-type: inline-size;
+  padding: clamp(8px, 2.6cqi, 14px) clamp(10px, 3cqi, 16px) clamp(9px, 2.8cqi, 15px);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.qr-alias-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 22px;
+}
+
+.qr-alias-label {
+  color: var(--muted-2);
+  font-size: 11px;
+  font-size: clamp(11px, 3.4cqi, 16px);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.qr-alias-copy {
+  width: 26px;
+  height: 26px;
+  width: clamp(26px, 7cqi, 36px);
+  height: clamp(26px, 7cqi, 36px);
+  flex: none;
+}
+
+.qr-alias-url {
+  display: block;
+  margin-top: 1px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+/* Modal açıkken kısa adres sunum/perde için daha büyük ölçeklenir. */
+.modal .qr-alias {
+  max-width: 480px;
+}
+
+.modal .qr-alias-url {
+  font-size: clamp(15px, 5.7cqi, 30px);
+}
+
+.qr-alias-url:hover {
+  color: var(--primary-2);
+  text-decoration: underline;
+}
+
 .join-link {
   display: flex;
   gap: 8px;
@@ -1705,8 +1772,6 @@ select.input option {
 
   .code-inputs {
     grid-template-columns: repeat(6, minmax(0, 1fr));
-    width: calc(100% + 28px);
-    margin-inline: -14px;
   }
 }
 

@@ -71,6 +71,7 @@ export function createServer(options = {}) {
   const DATA_DIR = options.dataDir || process.env.DATA_DIR || path.join(__dirname, 'data');
   const ADMIN_KEY = options.adminKey ?? process.env.ADMIN_KEY ?? '';
   const PUBLIC_URL = String(options.publicUrl ?? process.env.PUBLIC_URL ?? '').replace(/\/+$/, '');
+  const PUBLIC_ALIAS_URL = String(options.publicAliasUrl ?? process.env.PUBLIC_ALIAS_URL ?? '').replace(/\/+$/, '');
   const EVENT_TTL_DAYS = Number(options.eventTtlDays ?? process.env.EVENT_TTL_DAYS ?? 14);
   const MAX_EVENTS = Number(options.maxEvents ?? process.env.MAX_EVENTS ?? 500);
   const TRUST_PROXY = options.trustProxy ?? process.env.TRUST_PROXY !== '0';
@@ -265,6 +266,7 @@ export function createServer(options = {}) {
       online: playerOnlineCount(ev.code),
       onlineIds: new Set(map.keys()),
       publicUrl: PUBLIC_URL || null,
+      aliasUrl: PUBLIC_ALIAS_URL || null,
     });
   }
 
@@ -1069,7 +1071,7 @@ export function createServer(options = {}) {
     store.saveNowSync();
   }
 
-  return { app, server, io, store, start, close, config: { DATA_DIR, ADMIN_KEY, PUBLIC_URL, EVENT_TTL_DAYS, MAX_EVENTS } };
+  return { app, server, io, store, start, close, config: { DATA_DIR, ADMIN_KEY, PUBLIC_URL, PUBLIC_ALIAS_URL, EVENT_TTL_DAYS, MAX_EVENTS } };
 }
 
 // -----------------------------------------------------------------------------
