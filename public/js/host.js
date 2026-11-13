@@ -218,7 +218,7 @@
   // Modal altyapısı
   // ---------------------------------------------------------------------------
 
-  function openModal({ title, body, footer = '', wide = false, narrow = false, className = '', onMount = null }) {
+  function openModal({ title, body, footer = '', wide = false, narrow = false, className = '', onMount = null, autoFocus = true }) {
     modalEl.innerHTML = `
       <div class="modal-card ${wide ? 'wide' : ''} ${narrow ? 'narrow' : ''} ${className}" role="dialog" aria-modal="true" aria-label="${esc(title)}">
         <div class="modal-head">
@@ -235,9 +235,10 @@
       if (event.target === modalEl) closeModal();
     };
     if (onMount) onMount(modalEl);
-    if (window.innerWidth > 700) {
+    if (autoFocus && window.innerWidth > 700) {
       const first = modalEl.querySelector('.modal-body input, .modal-body textarea, .modal-foot .btn-primary');
-      if (first) setTimeout(() => first.focus(), 60);
+      // preventScroll: odaklanma, modal gövdesinin kaydırma konumunu değiştirmesin.
+      if (first) setTimeout(() => first.focus({ preventScroll: true }), 60);
     }
   }
 
@@ -1789,16 +1790,21 @@
     if (status) status.innerHTML = '<span class="warn">Kaydedilmemiş değişiklikler var</span>';
   }
 
-  function renderEditor(focusIndex = null, scrollToEnd = false) {
+  function renderEditor(focusIndex = null, scrollToEnd = false, focusSelector = null) {
     if (!S.editor) return;
     const list = S.editor.questions;
-    const bodyEl = modalEl.querySelector('.modal-body');
+    // Modal zaten açıksa bu bir yeniden çizimdir; kaydırma konumu korunmalı.
+    const wasOpen = !modalEl.hidden && !!modalEl.querySelector('.editor-modal');
+    // Editör ilk kez açılıyorsa önceki modalın kaydırma konumunu devralma.
+    const bodyEl = wasOpen ? modalEl.querySelector('.modal-body') : null;
     const scroll = scrollToEnd ? Infinity : bodyEl ? bodyEl.scrollTop : 0;
 
     openModal({
       title: `Sorular · ${list.length}`,
       wide: true,
       className: 'editor-modal',
+      // Yeniden çizimlerde ilk alana odaklanmak kaydırma konumunu bozuyordu.
+      autoFocus: !wasOpen && focusIndex === null && !focusSelector,
       body: `
         <div class="stack" style="gap:12px">
           <p class="hint">Değişiklikler <b>Kaydet</b> ile yayınlanır. Oturum başladıktan sonra sorular kilitlenir.</p>
@@ -1822,12 +1828,15 @@
           if (scroll === Infinity) newBody.scrollTop = newBody.scrollHeight;
           else newBody.scrollTop = scroll;
         }
-        if (focusIndex !== null) {
-          const target = modalEl.querySelector(`.editor-card[data-qcard="${focusIndex}"] textarea`);
-          if (target) {
-            target.focus();
-            target.scrollIntoView({ block: 'center' });
-          }
+        const target = focusSelector
+          ? modalEl.querySelector(focusSelector)
+          : focusIndex !== null
+            ? modalEl.querySelector(`.editor-card[data-qcard="${focusIndex}"] textarea`)
+            : null;
+        if (target) {
+          // preventScroll ile odaklan; gerekiyorsa yalnızca görünür alana getir.
+          target.focus({ preventScroll: true });
+          target.scrollIntoView({ block: scrollToEnd || wasOpen ? 'nearest' : 'center' });
         }
         document.getElementById('editor-cancel').addEventListener('click', () => closeModal());
         document.getElementById('editor-save').addEventListener('click', saveEditor);
@@ -1851,14 +1860,6 @@
         </div>`,
       );
     }
-
-    // Scroll'u yeniden uygula (openModal odaklaması sonrası)
-    requestAnimationFrame(() => {
-      const b = modalEl.querySelector('.modal-body');
-      if (!b) return;
-      if (scroll === Infinity) b.scrollTop = b.scrollHeight;
-      else b.scrollTop = scroll;
-    });
 
     updatePreview();
     setPreviewButtonState();
@@ -2194,7 +2195,7 @@
       if (S.previewIndex === i) S.previewIndex = i - 1;
       else if (S.previewIndex === i - 1) S.previewIndex = i;
       markDirty();
-      renderEditor(i - 1);
+      renderEditor();
       return;
     }
     if (action === 'down' && i < list.length - 1) {
@@ -2202,7 +2203,7 @@
       if (S.previewIndex === i) S.previewIndex = i + 1;
       else if (S.previewIndex === i + 1) S.previewIndex = i;
       markDirty();
-      renderEditor(i + 1);
+      renderEditor();
       return;
     }
     if (action === 'copy') {
@@ -2212,7 +2213,7 @@
       });
       if (S.previewIndex !== null && S.previewIndex > i) S.previewIndex += 1;
       markDirty();
-      renderEditor(i + 1);
+      renderEditor();
       return;
     }
     if (action === 'del') {
@@ -2224,7 +2225,7 @@
         S.previewIndex -= 1;
       }
       markDirty();
-      renderEditor(Math.max(0, Math.min(i, list.length - 1)));
+      renderEditor();
       return;
     }
     if (action === 'opt-add' && q.options.length < 10) {
@@ -2237,7 +2238,8 @@
       }
       q.options.push({ id, text: `Seçenek ${n}` });
       markDirty();
-      renderEditor(i);
+      // Yeni seçeneğin alanına odaklan, kartın kaydırma konumunu bozma.
+      renderEditor(null, false, `[data-field="opt"][data-i="${i}"][data-optid="${id}"]`);
       return;
     }
     if (action === 'opt-del' && q.options.length > 2) {
@@ -2246,13 +2248,13 @@
         q.correctId = q.options[0].id;
       }
       markDirty();
-      renderEditor(i);
+      renderEditor();
       return;
     }
     if (action === 'correct') {
       q.correctId = btn.dataset.opt;
       markDirty();
-      renderEditor(i);
+      renderEditor();
     }
   }
 
@@ -2298,7 +2300,7 @@
       if (type === 'wordcloud') q.maxLength = q.maxLength && q.maxLength <= 80 ? q.maxLength : 40;
     }
     markDirty();
-    renderEditor(i);
+    renderEditor();
   }
 
   async function saveEditor() {
